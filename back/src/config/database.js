@@ -1,6 +1,12 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
+// --- INICIO DE LA SOLUCIÓN ---
+// Forzar a Vercel a incluir 'mysql2' en el paquete final.
+// Sequelize lo carga dinámicamente, pero el empaquetador de Vercel no lo detecta.
+require('mysql2'); 
+// --- FIN DE LA SOLUCIÓN ---
+
 const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USER,
@@ -25,5 +31,6 @@ const sequelize = new Sequelize(
     }
 );
 
+// Trigger Vercel redeploy (Este comentario ya lo habías puesto, está bien)
+
 module.exports = sequelize;
-// Trigger Vercel redeploy
