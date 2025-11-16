@@ -177,8 +177,15 @@
             loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault(); // Evita que la página se recargue
 
-                const email = emailInput.value;
-                const password = passwordInput.value;
+                // * ==================================================
+                // * INICIO DE LA CORRECCIÓN
+                // * Aplicamos .trim() para matar espacios fantasma
+                // * ==================================================
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                // * ==================================================
+                // * FIN DE LA CORRECCIÓN
+                // * ==================================================
 
                 // Deshabilitar botón para evitar múltiples clics
                 loginButton.disabled = true;

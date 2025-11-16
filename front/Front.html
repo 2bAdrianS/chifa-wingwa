@@ -66,13 +66,19 @@
             flex-grow: 1; /* Ocupa el espacio disponible */
         }
         
-        /* Ocultar menú por rol por defecto */
+        /* * ==================================================
+         * INICIO DE CORRECCIÓN DE LÓGICA DE ROLES
+         * Ahora todos los items están ocultos por defecto
+         * ==================================================
+        */
         .menu-item.role-chef,
-        .menu-item.role-almacen,
+        .menu-item.role-encargado-almacen,
+        .menu-item.role-jefe-almacen,
         .menu-item.role-compras,
         .menu-item.role-dueño {
             display: none;
         }
+        /* FIN DE CORRECCIÓN */
 
         .menu-item {
             padding: 15px 25px;
@@ -248,6 +254,97 @@
         input:checked + .slider { background-color: #ff3333; }
         input:checked + .slider:before { transform: translateX(26px); }
         .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        
+        /* --- ESTILOS PARA LOS MODALES (ALERTA Y CONFIRMACIÓN) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-box {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 450px;
+            padding: 30px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+        .modal-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+        .modal-icon .fa-times-circle { color: #dc3545; display: none; }
+        .modal-icon .fa-check-circle { color: #28a745; display: none; }
+        .modal-icon .fa-exclamation-triangle { color: #ffc107; display: none; }
+        .modal-icon .fa-question-circle { color: #0d6efd; display: none; } /* NUEVO */
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .modal-message {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            word-wrap: break-word;
+        }
+        .modal-button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        /* NUEVOS ESTILOS PARA BOTONES DE CONFIRMACIÓN */
+        .modal-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .btn-confirm-accept {
+            background-color: #0d6efd; /* Azul */
+            color: white;
+        }
+        .btn-confirm-accept:hover {
+            background-color: #0b5ed7;
+        }
+        .btn-confirm-cancel {
+            background-color: #6c757d; /* Gris */
+            color: white;
+        }
+        .btn-confirm-cancel:hover {
+            background-color: #5a6268;
+        }
+        /* FIN NUEVOS ESTILOS */
+        
+        .modal-button.modal-error { background-color: #dc3545; color: white; }
+        .modal-button.modal-success { background-color: #28a745; color: white; }
+        .modal-button.modal-warning { background-color: #ffc107; color: #333; }
+        /* --- FIN ESTILOS MODALES --- */
     </style>
 </head>
 <body>
@@ -274,22 +371,22 @@
                 <span>Verificar Despacho</span>
             </a>
             
-            <a class="menu-item role-almacen" data-view="view-approve-request">
+            <a class="menu-item role-jefe-almacen" data-view="view-approve-request">
                 <i class="fas fa-tasks"></i>
                 <span>Aprobar Solicitudes</span>
             </a>
             
-            <a class="menu-item role-almacen" data-view="view-dispatch">
+            <a class="menu-item role-encargado-almacen" data-view="view-dispatch">
                 <i class="fas fa-truck"></i>
                 <span>Registrar Despacho</span>
             </a>
             
-            <a class="menu-item role-almacen" data-view="view-purchase-order">
+            <a class="menu-item role-encargado-almacen" data-view="view-purchase-order">
                 <i class="fas fa-clipboard-list"></i>
                 <span>Orden de Compra</span>
             </a>
             
-            <a class="menu-item role-almacen" data-view="view-entry">
+            <a class="menu-item role-encargado-almacen" data-view="view-entry">
                 <i class="fas fa-dolly-flatbed"></i>
                 <span>Registrar Entrada</span>
             </a>
@@ -299,27 +396,26 @@
                 <span>Validar Órdenes</span>
             </a>
             
-            <a class="menu-item role-almacen" data-view="view-gestionar-insumos">
+            <a class="menu-item role-jefe-almacen role-encargado-almacen" data-view="view-gestionar-insumos">
                 <i class="fas fa-book"></i>
                 <span>Gestionar Insumos</span>
             </a>
             
-            <a class="menu-item role-almacen" data-view="view-stock">
+            <a class="menu-item role-encargado-almacen" data-view="view-stock">
                 <i class="fas fa-boxes"></i>
                 <span>Actualizar Stock</span>
             </a>
             
-            <a class="menu-item role-almacen" data-view="view-merma">
+            <a class="menu-item role-encargado-almacen" data-view="view-merma">
                 <i class="fas fa-exclamation-triangle"></i>
                 <span>Registrar Merma</span>
             </a>
             
-            <a class="menu-item role-almacen role-dueño" data-view="view-history">
+            <a class="menu-item role-jefe-almacen role-dueño" data-view="view-history">
                 <i class="fas fa-history"></i>
                 <span>Historial</span>
             </a>
         </div>
-
         <div class="sidebar-footer">
             <a class="menu-item" data-view="view-settings">
                 <i class="fas fa-cog"></i>
@@ -463,7 +559,9 @@
 
         <section id="view-dispatch" class="view">
             <div class="content-card">
-                 <h2 style="color: #ff3333; margin-bottom: 25px;">Registrar Despacho de Insumos</h2>
+                
+                <h2 style="color: #ff3333; margin-bottom: 25px;">Registrar Despacho de Insumos</h2>
+                
                 <form id="form-despacho">
                     <div class="form-grid">
                         <div class="form-group">
@@ -471,21 +569,25 @@
                             <input type="text" id="dispatch-requester" class="form-control" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="dispatch-code">Codigo de solicitud (Aprobada)</label>
-                            <input type="text" id="dispatch-code" class="form-control" placeholder="Ej: 17">
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Insumos a despachar:</label>
-                            <p>(El sistema despachará automáticamente todos los insumos de la solicitud aprobada)</p>
+                            <label for="dispatch-code">Codigo de solicitud (Manual)</label>
+                            <input type="text" id="dispatch-code" class="form-control" placeholder="Ej: 17 (Opcional)">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
-                        <i class="fas fa-truck"></i> Registrar Despacho
+                    <button type="submit" class="btn btn-secondary" style="margin-top: 20px;" disabled>
+                        <i class="fas fa-truck"></i> Registrar Despacho Manual
                     </button>
                 </form>
+
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+
+                <h3 style="color: #333; margin-bottom: 15px;">...O seleccione una Solicitud Aprobada de la lista:</h3>
+                
+                <div id="dispatch-list-container">
+                    <p class="no-records">Cargando solicitudes aprobadas...</p>
+                </div>
+
             </div>
         </section>
-
         <section id="view-purchase-order" class="view">
             <div class="content-card">
                  <h2 style="color: #ff3333; margin-bottom: 25px;">Generar Orden de Compra</h2>
@@ -710,509 +812,1171 @@
 
     </main>
 
-<script>
-        document.addEventListener('DOMContentLoaded', function() {
+    <div class="modal-overlay" id="custom-alert-modal">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <i class="fas fa-times-circle"></i>
+                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 class="modal-title" id="custom-alert-title">¡Error!</h2>
+            <p class="modal-message" id="custom-alert-message">Este es un mensaje de error.</p>
+            <button class="modal-button" id="custom-alert-button">Aceptar</button>
+        </div>
+    </div>
+    <div class="modal-overlay" id="custom-confirm-modal">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <i class="fas fa-question-circle" style="display: block;"></i>
+            </div>
+            <h2 class="modal-title" id="custom-confirm-title">Confirmación Requerida</h2>
+            <p class="modal-message" id="custom-confirm-message">¿Está seguro?</p>
+            <div class="modal-buttons-container">
+                <button class="modal-button btn-confirm-cancel" id="custom-confirm-btn-cancel">Cancelar</button>
+                <button class="modal-button btn-confirm-accept" id="custom-confirm-btn-accept">Aceptar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
             
-            // --- SECCIÓN 1: SEGURIDAD Y AUTENTICACIÓN ---
-            const token = localStorage.getItem('token');
-            const user = JSON.parse(localStorage.getItem('user'));
+        // --- SECCIÓN DE MODAL DE ALERTA (Éxito/Error) ---
+        const alertModalOverlay = document.getElementById('custom-alert-modal');
+        const alertModalIcon = alertModalOverlay.querySelector('.modal-icon');
+        const alertModalTitle = document.getElementById('custom-alert-title');
+        const alertModalMessage = document.getElementById('custom-alert-message');
+        const alertModalButton = document.getElementById('custom-alert-button');
 
-            if (!token || !user) {
-                alert('Acceso denegado. Por favor, inicie sesión.');
-                window.location.href = 'login.html';
-                return;
+        function showCustomAlert(message, type = 'error') {
+            alertModalIcon.querySelectorAll('i').forEach(i => i.style.display = 'none');
+            alertModalButton.classList.remove('modal-error', 'modal-success', 'modal-warning');
+
+            if (type === 'success') {
+                alertModalIcon.querySelector('.fa-check-circle').style.display = 'block';
+                alertModalTitle.textContent = '¡Éxito!';
+                alertModalButton.classList.add('modal-success');
+            } else if (type === 'warning') {
+                alertModalIcon.querySelector('.fa-exclamation-triangle').style.display = 'block';
+                alertModalTitle.textContent = 'Advertencia';
+                alertModalButton.classList.add('modal-warning');
+            } else { // 'error'
+                alertModalIcon.querySelector('.fa-times-circle').style.display = 'block';
+                alertModalTitle.textContent = 'Error';
+                alertModalButton.classList.add('modal-error');
             }
+            alertModalMessage.textContent = message;
+            alertModalOverlay.classList.add('active');
+        }
 
-            // --- SECCIÓN 2: PERSONALIZACIÓN Y ROLES ---
-            const userInfoHeader = document.querySelector('.header .user-info span');
-            if (userInfoHeader) {
-                userInfoHeader.textContent = `${user.nombre} (${user.rol})`;
+        alertModalButton.addEventListener('click', () => {
+            alertModalOverlay.classList.remove('active');
+        });
+        alertModalOverlay.addEventListener('click', (e) => {
+            if (e.target === alertModalOverlay) {
+                alertModalOverlay.classList.remove('active');
             }
+        });
+        // --- FIN DE MODAL DE ALERTA ---
 
-            function setupRoleVisibility(rol) {
-                document.querySelectorAll('.role-chef, .role-almacen, .role-compras, .role-dueño').forEach(el => {
-                    el.style.display = 'none';
-                });
+        // --- INICIO: NUEVA SECCIÓN DE CONFIRMACIÓN (Sí/No) ---
+        const confirmModalOverlay = document.getElementById('custom-confirm-modal');
+        const confirmModalIcon = confirmModalOverlay.querySelector('.modal-icon .fa-question-circle');
+        const confirmModalTitle = document.getElementById('custom-confirm-title');
+        const confirmModalMessage = document.getElementById('custom-confirm-message');
+        const confirmBtnAccept = document.getElementById('custom-confirm-btn-accept');
+        const confirmBtnCancel = document.getElementById('custom-confirm-btn-cancel');
 
-                if (rol === 'Chef de Cocina') {
-                    document.querySelectorAll('.role-chef').forEach(el => el.style.display = 'flex');
-                }
-                if (rol === 'Jefe de Almacen') {
-                    document.querySelectorAll('.role-almacen, .role-dueño').forEach(el => el.style.display = 'flex');
-                }
-                if (rol === 'Encargado de Almacen') {
-                    document.querySelectorAll('.role-almacen').forEach(el => el.style.display = 'flex');
-                }
-                if (rol === 'Encargado de Compras') {
-                    document.querySelectorAll('.role-compras').forEach(el => el.style.display = 'flex');
-                }
-                if (rol === 'Dueño') {
-                    document.querySelectorAll('.role-dueño').forEach(el => el.style.display = 'flex');
-                }
+        let resolveConfirm; // Variable para guardar la promesa
+
+        /**
+         * Muestra un modal de confirmación personalizado.
+         * @param {string} message - El mensaje de la pregunta.
+         * @param {string} title - (Opcional) Un título personalizado.
+         * @returns {Promise<boolean>} - Resuelve a 'true' si se acepta, 'false' si se cancela.
+         */
+        function showCustomConfirm(message, title = 'Confirmación Requerida') {
+            return new Promise((resolve) => {
+                confirmModalTitle.textContent = title;
+                confirmModalMessage.textContent = message;
+                confirmModalOverlay.classList.add('active');
+                
+                // Mostrar icono de pregunta (por si acaso estaba oculto)
+                confirmModalIcon.style.display = 'block'; 
+
+                resolveConfirm = resolve; // Guardamos la función 'resolve'
+            });
+        }
+
+        function closeConfirm(value) {
+            confirmModalOverlay.classList.remove('active');
+            if (resolveConfirm) {
+                resolveConfirm(value); // Resolvemos la promesa (true si Aceptar, false si Cancelar)
             }
-            
-            setupRoleVisibility(user.rol);
+        }
 
-            // --- SECCIÓN 3: REFERENCIAS A ELEMENTOS ---
-            const menuItems = document.querySelectorAll('.menu-item[data-view]');
-            const views = document.querySelectorAll('.view');
-            const pageTitle = document.getElementById('page-title');
-            const logoutBtn = document.getElementById('logout-btn');
-            
-            // Formularios
-            const formSolicitud = document.getElementById('form-solicitud');
-            const formDespacho = document.getElementById('form-despacho');
-            const formStock = document.getElementById('form-stock');
-            const formOrdenCompra = document.getElementById('form-orden-compra');
-            const formMerma = document.getElementById('form-merma');
-            const formCrearInsumo = document.getElementById('form-crear-insumo');
-
-            // Cuerpos de Tablas
-            const historyTableBody = document.getElementById('history-table-body');
-            const stockTableBody = document.getElementById('stock-table-body');
-            const validateTableBody = document.getElementById('validate-table-body');
-            const entryTableBody = document.getElementById('entry-table-body');
-            const approveTableBody = document.getElementById('approve-table-body');
-            const verifyDispatchTableBody = document.getElementById('verify-dispatch-table-body');
-            const poTableBody = document.getElementById('po-table-body');
-            const gestionarInsumosTable = document.getElementById('gestionar-insumos-table');
-            
-            // Controles de Solicitud Dinámica
-            const requestInsumoSelect = document.getElementById('request-insumo-select');
-            const requestInsumoQty = document.getElementById('request-insumo-qty');
-            const btnAddInsumo = document.getElementById('btn-add-insumo');
-            const requestItemsTable = document.getElementById('request-items-table');
-            
-            const mermaInsumoSelect = document.getElementById('merma-insumo-select');
-
-            let insumosParaSolicitud = []; // Variable global para la lista de solicitud
-
-            const titles = {
-                'view-welcome': 'Panel de Control',
-                'view-request': 'Registrar Solicitud',
-                'view-verify-dispatch': 'Verificar Despacho',
-                'view-approve-request': 'Aprobar Solicitudes',
-                'view-dispatch': 'Registrar Despacho',
-                'view-purchase-order': 'Orden de Compra',
-                'view-entry': 'Registrar Entrada',
-                'view-validate-order': 'Validar Órdenes',
-                'view-gestionar-insumos': 'Gestionar Insumos',
-                'view-stock': 'Actualizar Stock',
-                'view-merma': 'Registrar Merma',
-                'view-history': 'Historial',
-                'view-settings': 'Configuración',
-                'view-help': 'Ayuda'
-            };
-
-            // --- SECCIÓN 4: NAVEGACIÓN ENTRE VISTAS ---
-            function showView(viewId) {
-                views.forEach(view => view.classList.remove('active'));
-                const activeView = document.getElementById(viewId);
-                if (activeView) activeView.classList.add('active');
-                pageTitle.textContent = titles[viewId] || 'Panel de Control';
+        confirmBtnAccept.addEventListener('click', () => closeConfirm(true));
+        confirmBtnCancel.addEventListener('click', () => closeConfirm(false));
+        confirmModalOverlay.addEventListener('click', (e) => {
+            if (e.target === confirmModalOverlay) {
+                closeConfirm(false); // Cancelar si se hace clic fuera
             }
+        });
+        // --- FIN: NUEVA SECCIÓN DE CONFIRMACIÓN ---
 
-            menuItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                    const viewId = this.getAttribute('data-view');
-                    if (viewId) {
-                        showView(viewId);
-                        
-                        // Cargar datos de API al cambiar de vista
-                        if (viewId === 'view-history') cargarHistorial();
-                        if (viewId === 'view-stock') cargarStock();
-                        if (viewId === 'view-validate-order') cargarOrdenesPendientes();
-                        if (viewId === 'view-entry') cargarOrdenesValidadas();
-                        if (viewId === 'view-approve-request') cargarSolicitudesPendientes();
-                        if (viewId === 'view-verify-dispatch') cargarDespachosPendientes();
-                        if (viewId === 'view-merma') cargarInsumosParaMerma();
-                        if (viewId === 'view-purchase-order') {
-                            document.getElementById('manager-name').value = user.nombre;
-                            cargarOrdenesStockBajo();
-                        }
-                        if (viewId === 'view-request') {
-                            document.getElementById('requester-name').value = user.nombre;
-                            document.getElementById('requester-position').value = user.rol;
-                            cargarInsumosParaSolicitud(); 
-                            limpiarTablaSolicitud();
-                        }
-                        if (viewId === 'view-gestionar-insumos') {
-                            cargarGestionarInsumos();
-                        }
-                        
-                        // Rellenar formularios con datos del usuario
-                        if (viewId === 'view-dispatch') {
-                            document.getElementById('dispatch-requester').value = user.nombre;
-                            // ¡NUEVA LÓGICA AQUÍ!
-                            cargarSolicitudesAprobadasParaDespacho();
-                        }
-                    }
-                });
+
+        // --- SECCIÓN 1: SEGURIDAD Y AUTENTICACIÓN ---
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user) {
+            showCustomAlert('Acceso denegado. Por favor, inicie sesión.', 'error');
+            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+            return;
+        }
+
+        // --- SECCIÓN 2: PERSONALIZACIÓN Y ROLES ---
+        const userInfoHeader = document.querySelector('.header .user-info span');
+        if (userInfoHeader) {
+            userInfoHeader.textContent = `${user.nombre} (${user.rol})`;
+        }
+
+        /* * ==================================================
+         * INICIO DE FUNCIÓN setupRoleVisibility REESCRITA
+         * Esta nueva función es estricta y asigna
+         * solo las vistas que le tocan a cada rol.
+         * ==================================================
+        */
+        function setupRoleVisibility(rol) {
+            // 1. Ocultar todos los items de rol primero
+            document.querySelectorAll('.role-chef, .role-encargado-almacen, .role-jefe-almacen, .role-compras, .role-dueño').forEach(el => {
+                el.style.display = 'none';
             });
 
-            // --- SECCIÓN 5: LÓGICA DE CERRAR SESIÓN ---
-            logoutBtn.addEventListener('click', function(e) {
+            // 2. Mostrar items basados en el rol (sin compartir clases confusas)
+            // Normalizamos el rol que viene del token (por si acaso)
+            const rolNormalizado = rol ? rol.toLowerCase().trim() : '';
+
+            if (rolNormalizado === 'chef de cocina') {
+                document.querySelectorAll('.role-chef').forEach(el => el.style.display = 'flex');
+            }
+            else if (rolNormalizado === 'encargado de almacen') {
+                document.querySelectorAll('.role-encargado-almacen').forEach(el => el.style.display = 'flex');
+            }
+            else if (rolNormalizado === 'jefe de almacen') {
+                document.querySelectorAll('.role-jefe-almacen').forEach(el => el.style.display = 'flex');
+            }
+            else if (rolNormalizado === 'encargado de compras') {
+                document.querySelectorAll('.role-compras').forEach(el => el.style.display = 'flex');
+            }
+            else if (rolNormalizado === 'dueño') {
+                document.querySelectorAll('.role-dueño').forEach(el => el.style.display = 'flex');
+            }
+        }
+        
+        // Ejecutamos la nueva función
+        setupRoleVisibility(user.rol);
+        /* * ==================================================
+         * FIN DE FUNCIÓN setupRoleVisibility REESCRITA
+         * ==================================================
+        */
+
+        // --- SECCIÓN 3: REFERENCIAS A ELEMENTOS ---
+        const menuItems = document.querySelectorAll('.menu-item[data-view]');
+        const views = document.querySelectorAll('.view');
+        const pageTitle = document.getElementById('page-title');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // Formularios
+        const formSolicitud = document.getElementById('form-solicitud');
+        const formDespacho = document.getElementById('form-despacho');
+        const formStock = document.getElementById('form-stock');
+        const formOrdenCompra = document.getElementById('form-orden-compra');
+        const formMerma = document.getElementById('form-merma');
+        const formCrearInsumo = document.getElementById('form-crear-insumo');
+
+        // Cuerpos de Tablas
+        const historyTableBody = document.getElementById('history-table-body');
+        const stockTableBody = document.getElementById('stock-table-body');
+        const validateTableBody = document.getElementById('validate-table-body');
+        const entryTableBody = document.getElementById('entry-table-body');
+        const approveTableBody = document.getElementById('approve-table-body');
+        const verifyDispatchTableBody = document.getElementById('verify-dispatch-table-body');
+        const poTableBody = document.getElementById('po-table-body');
+        const gestionarInsumosTable = document.getElementById('gestionar-insumos-table');
+        
+        // Controles de Solicitud Dinámica
+        const requestInsumoSelect = document.getElementById('request-insumo-select');
+        const requestInsumoQty = document.getElementById('request-insumo-qty');
+        const btnAddInsumo = document.getElementById('btn-add-insumo');
+        const requestItemsTable = document.getElementById('request-items-table');
+        
+        const mermaInsumoSelect = document.getElementById('merma-insumo-select');
+
+        let insumosParaSolicitud = []; // Variable global para la lista de solicitud
+
+        const titles = {
+            'view-welcome': 'Panel de Control',
+            'view-request': 'Registrar Solicitud',
+            'view-verify-dispatch': 'Verificar Despacho',
+            'view-approve-request': 'Aprobar Solicitudes',
+            'view-dispatch': 'Registrar Despacho',
+            'view-purchase-order': 'Orden de Compra',
+            'view-entry': 'Registrar Entrada',
+            'view-validate-order': 'Validar Órdenes',
+            'view-gestionar-insumos': 'Gestionar Insumos',
+            'view-stock': 'Actualizar Stock',
+            'view-merma': 'Registrar Merma',
+            'view-history': 'Historial',
+            'view-settings': 'Configuración',
+            'view-help': 'Ayuda'
+        };
+
+        // --- SECCIÓN 4: NAVEGACIÓN ENTRE VISTAS ---
+        function showView(viewId) {
+            views.forEach(view => view.classList.remove('active'));
+            const activeView = document.getElementById(viewId);
+            if (activeView) activeView.classList.add('active');
+            pageTitle.textContent = titles[viewId] || 'Panel de Control';
+        }
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
                 e.preventDefault();
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                alert('Sesión cerrada correctamente.');
-                window.location.href = 'login.html';
+                menuItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                const viewId = this.getAttribute('data-view');
+                if (viewId) {
+                    showView(viewId);
+                    
+                    // Cargar datos de API al cambiar de vista
+                    if (viewId === 'view-history') cargarHistorial();
+                    if (viewId === 'view-stock') cargarStock();
+                    if (viewId === 'view-validate-order') cargarOrdenesPendientes();
+                    if (viewId === 'view-entry') cargarOrdenesValidadas();
+                    if (viewId === 'view-approve-request') cargarSolicitudesPendientes();
+                    if (viewId === 'view-verify-dispatch') cargarDespachosPendientes();
+                    if (viewId === 'view-merma') cargarInsumosParaMerma();
+                    if (viewId === 'view-purchase-order') {
+                        document.getElementById('manager-name').value = user.nombre;
+                        cargarOrdenesStockBajo();
+                    }
+                    if (viewId === 'view-request') {
+                        document.getElementById('requester-name').value = user.nombre;
+                        document.getElementById('requester-position').value = user.rol;
+                        cargarInsumosParaSolicitud(); 
+                        limpiarTablaSolicitud();
+                    }
+                    if (viewId === 'view-gestionar-insumos') {
+                        cargarGestionarInsumos();
+                    }
+                    
+                    // Rellenar formularios con datos del usuario
+                    if (viewId === 'view-dispatch') {
+                        document.getElementById('dispatch-requester').value = user.nombre;
+                        // ¡NUEVA LÓGICA AQUÍ!
+                        cargarSolicitudesAprobadasParaDespacho();
+                    }
+                }
             });
+        });
 
-            // --- SECCIÓN 6: FUNCIÓN PARA CARGAR HISTORIAL ---
-            async function cargarHistorial() {
-                historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Cargando historial...</td></tr>';
-                try {
-                    const response = await fetch('http://localhost:3000/api/historial', {
-                        method: 'GET',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (!response.ok) throw new Error('Error al cargar el historial');
-                    const historial = await response.json();
-                    historyTableBody.innerHTML = ''; 
-                    if (historial.length === 0) {
-                        historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">No hay registros para mostrar</td></tr>';
-                        return;
-                    }
-                    historial.forEach(mov => {
-                        const row = document.createElement('tr');
-                        const fecha = new Date(mov.createdAt).toLocaleString();
-                        row.innerHTML = `
-                            <td>${fecha}</td>
-                            <td>${mov.insumo.nombre}</td>
-                            <td>${mov.cantidad}</td>
-                            <td>${mov.tipo}</td> 
-                            <td>${mov.motivo || '-'}</td>
-                        `;
-                        historyTableBody.appendChild(row);
-                    });
-                } catch (error) {
-                    console.error('Error:', error);
-                    historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Error al cargar los datos.</td></tr>';
-                }
-            }
+        // --- SECCIÓN 5: LÓGICA DE CERRAR SESIÓN ---
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            showCustomAlert('Sesión cerrada correctamente.', 'success');
+            setTimeout(() => { // Damos tiempo para ver el mensaje
+                 window.location.href = 'login.html';
+            }, 1500);
+        });
 
-            // --- (MODIFICADO) SECCIÓN 7: LÓGICA FORMULARIO SOLICITUD (DINÁMICO) ---
-            
-            // Cargar insumos en el <select> del formulario de solicitud
-            async function cargarInsumosParaSolicitud() {
-                requestInsumoSelect.innerHTML = '<option value="">Cargando insumos...</option>';
-                try {
-                    const response = await fetch('http://localhost:3000/api/insumos', {
-                        method: 'GET',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (!response.ok) throw new Error('Error al cargar insumos');
-                    
-                    const insumos = await response.json();
-                    requestInsumoSelect.innerHTML = '<option value="">-- Seleccione un insumo --</option>';
-                    
-                    insumos.forEach(insumo => {
-                        const option = document.createElement('option');
-                        option.value = insumo.id;
-                        option.textContent = `${insumo.nombre} (Stock: ${parseFloat(insumo.stock_actual)})`;
-                        option.dataset.nombre = insumo.nombre; // Guardar el nombre
-                        requestInsumoSelect.appendChild(option);
-                    });
-                } catch (error) {
-                    console.error('Error:', error);
-                    requestInsumoSelect.innerHTML = '<option value="">Error al cargar insumos</option>';
-                }
-            }
-            
-            // Limpiar la tabla de solicitud
-            function limpiarTablaSolicitud() {
-                insumosParaSolicitud = []; // Vaciar el array
-                requestItemsTable.innerHTML = '<tr><td colspan="3" class="no-records">Añada insumos a la solicitud</td></tr>';
-            }
-
-            // Añadir insumo a la tabla temporal
-            if (btnAddInsumo) {
-                btnAddInsumo.addEventListener('click', function() {
-                    const selectedOption = requestInsumoSelect.options[requestInsumoSelect.selectedIndex];
-                    const insumoId = parseInt(selectedOption.value);
-                    const insumoNombre = selectedOption.dataset.nombre;
-                    const cantidad = parseFloat(requestInsumoQty.value);
-
-                    // Validaciones
-                    if (!insumoId) { alert('Error: Debe seleccionar un insumo.'); return; }
-                    if (!cantidad || cantidad <= 0) { alert('Error: La cantidad debe ser un número mayor a 0.'); return; }
-                    // Evitar duplicados
-                    if (insumosParaSolicitud.find(item => item.id_insumo === insumoId)) {
-                        alert('Error: Ese insumo ya está en la lista.');
-                        return;
-                    }
-
-                    insumosParaSolicitud.push({ id_insumo, nombre: insumoNombre, cantidad });
-                    actualizarTablaSolicitud();
-                    requestInsumoSelect.value = "";
-                    requestInsumoQty.value = "";
+        // --- SECCIÓN 6: FUNCIÓN PARA CARGAR HISTORIAL ---
+        async function cargarHistorial() {
+            historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Cargando historial...</td></tr>';
+            try {
+                const response = await fetch('http://localhost:3000/api/historial', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
-            }
-
-            // Función para redibujar la tabla de solicitud
-            function actualizarTablaSolicitud() {
-                requestItemsTable.innerHTML = '';
-                if (insumosParaSolicitud.length === 0) {
-                    requestItemsTable.innerHTML = '<tr><td colspan="3" class="no-records">Añada insumos a la solicitud</td></tr>';
+                if (!response.ok) throw new Error('Error al cargar el historial');
+                const historial = await response.json();
+                historyTableBody.innerHTML = ''; 
+                if (historial.length === 0) {
+                    historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">No hay registros para mostrar</td></tr>';
                     return;
                 }
-                insumosParaSolicitud.forEach((item, index) => {
+                historial.forEach(mov => {
                     const row = document.createElement('tr');
+                    const fecha = new Date(mov.createdAt).toLocaleString();
                     row.innerHTML = `
-                        <td>${item.nombre}</td>
-                        <td>${item.cantidad}</td>
+                        <td>${fecha}</td>
+                        <td>${mov.insumo.nombre}</td>
+                        <td>${mov.cantidad}</td>
+                        <td>${mov.tipo}</td> 
+                        <td>${mov.motivo || '-'}</td>
+                    `;
+                    historyTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                showCustomAlert('Error al cargar el historial.', 'error');
+                historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Error al cargar los datos.</td></tr>';
+            }
+        }
+
+        // --- (MODIFICADO) SECCIÓN 7: LÓGICA FORMULARIO SOLICITUD (DINÁMICO) ---
+        
+        // Cargar insumos en el <select> del formulario de solicitud
+        async function cargarInsumosParaSolicitud() {
+            requestInsumoSelect.innerHTML = '<option value="">Cargando insumos...</option>';
+            try {
+                const response = await fetch('http://localhost:3000/api/insumos', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Error al cargar insumos');
+                
+                const insumos = await response.json();
+                requestInsumoSelect.innerHTML = '<option value="">-- Seleccione un insumo --</option>';
+                
+                insumos.forEach(insumo => {
+                    const option = document.createElement('option');
+                    option.value = insumo.id;
+                    option.textContent = `${insumo.nombre} (Stock: ${parseFloat(insumo.stock_actual)})`;
+                    option.dataset.nombre = insumo.nombre; // Guardar el nombre
+                    requestInsumoSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                requestInsumoSelect.innerHTML = '<option value="">Error al cargar insumos</option>';
+            }
+        }
+        
+        // Limpiar la tabla de solicitud
+        function limpiarTablaSolicitud() {
+            insumosParaSolicitud = []; // Vaciar el array
+            requestItemsTable.innerHTML = '<tr><td colspan="3" class="no-records">Añada insumos a la solicitud</td></tr>';
+        }
+
+        // Añadir insumo a la tabla temporal
+        if (btnAddInsumo) {
+            btnAddInsumo.addEventListener('click', function() {
+                // (Líneas 882-899 aprox.)
+                const selectedOption = requestInsumoSelect.options[requestInsumoSelect.selectedIndex];
+                const id_insumo = parseInt(selectedOption.value); // <-- 1. CORREGIDO
+                const insumoNombre = selectedOption.dataset.nombre;
+                const cantidad = parseFloat(requestInsumoQty.value);
+
+                // Validaciones (REEMPLAZAMOS ALERT())
+                if (!id_insumo) {
+                    showCustomAlert('Error: Debe seleccionar un insumo.', 'warning');
+                    return;
+                }
+                if (!cantidad || cantidad <= 0) {
+                    showCustomAlert('Error: La cantidad debe ser un número mayor a 0.', 'warning');
+                    return;
+                }
+                
+                // Evitar duplicados
+                if (insumosParaSolicitud.find(item => item.id_insumo === id_insumo)) { // <-- 3. CORREGIDO
+                    showCustomAlert('Error: Ese insumo ya está en la lista.', 'warning');
+                    return;
+                }
+
+                insumosParaSolicitud.push({ id_insumo, nombre: insumoNombre, cantidad }); // <-- 4. AHORA FUNCIONA
+                actualizarTablaSolicitud();
+                requestInsumoSelect.value = "";
+                requestInsumoQty.value = "";
+            });
+        }
+
+        // Función para redibujar la tabla de solicitud
+        function actualizarTablaSolicitud() {
+            requestItemsTable.innerHTML = '';
+            if (insumosParaSolicitud.length === 0) {
+                requestItemsTable.innerHTML = '<tr><td colspan="3" class="no-records">Añada insumos a la solicitud</td></tr>';
+                return;
+            }
+            insumosParaSolicitud.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.nombre}</td>
+                    <td>${item.cantidad}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-item-btn" data-index="${index}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                requestItemsTable.appendChild(row);
+            });
+        }
+
+        // Event listener para botones de eliminar en la tabla de solicitud
+        requestItemsTable.addEventListener('click', function(e) {
+            const button = e.target.closest('.remove-item-btn');
+            if (button) {
+                const index = parseInt(button.dataset.index);
+                insumosParaSolicitud.splice(index, 1);
+                actualizarTablaSolicitud();
+            }
+        });
+
+        // Event listener para el formulario principal de solicitud
+        if (formSolicitud) {
+            formSolicitud.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                if (insumosParaSolicitud.length === 0) {
+                    // REEMPLAZAMOS ALERT()
+                    showCustomAlert('Error: Debe añadir al menos un insumo a la solicitud.', 'warning');
+                    return;
+                }
+                const insumosParaAPI = insumosParaSolicitud.map(item => ({
+                    id_insumo: item.id_insumo,
+                    cantidad: item.cantidad
+                }));
+                const comentarios = document.getElementById('request-comments').value;
+                try {
+                    const response = await fetch('http://localhost:3000/api/solicitudes', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ insumos: insumosParaAPI, comentarios })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        // REEMPLAZAMOS ALERT()
+                        showCustomAlert('¡Solicitud registrada exitosamente! (ID: ' + data.solicitud.id + ')', 'success');
+                        formSolicitud.reset();
+                        limpiarTablaSolicitud();
+                        showView('view-welcome');
+                    } else {
+                        // REEMPLAZAMOS ALERT()
+                        showCustomAlert('Error: ' + data.message, 'error');
+                    }
+                } catch (error) {
+                    // REEMPLAZAMOS ALERT()
+                    showCustomAlert('Ocurrió un error al conectar con el servidor.', 'error');
+                }
+            });
+        }
+        
+        // --- (MODIFICADO) SECCIÓN 8: LÓGICA FORMULARIO DESPACHO ---
+        
+        // Función para cargar solicitudes aprobadas para despacho
+        async function cargarSolicitudesAprobadasParaDespacho() {
+            const despacharContainer = document.getElementById('dispatch-list-container'); // Contenedor que vamos a crear en HTML
+            
+            // Si el contenedor no existe, no hacemos nada (esto evita un error si usamos esta función en el formulario antiguo)
+            if (!despacharContainer) return; 
+
+            despacharContainer.innerHTML = '<p class="no-records">Cargando solicitudes...</p>';
+
+            try {
+                // Reutilizamos la ruta GET /api/solicitudes/aprobadas que creamos
+                const response = await fetch('http://localhost:3000/api/solicitudes/aprobadas', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Error al cargar solicitudes aprobadas');
+                
+                const solicitudes = await response.json();
+                
+                if (solicitudes.length === 0) {
+                    despacharContainer.innerHTML = '<p class="no-records">No hay solicitudes aprobadas listas para despachar.</p>';
+                    return;
+                }
+
+                // Construir la tabla con las solicitudes aprobadas
+                let htmlContent = '<table class="data-table"><thead><tr><th>ID</th><th>Solicitante</th><th>Detalle</th><th>Acción</th></tr></thead><tbody>';
+
+                solicitudes.forEach(sol => {
+                    const insumosStr = sol.insumos.map(
+                        item => `${item.nombre} (${parseFloat(item.Solicitud_Detalle.cantidad_solicitada)})`
+                    ).join(', ');
+                    
+                    htmlContent += `
+                        <tr>
+                            <td>${sol.id}</td>
+                            <td>${sol.solicitante.nombre}</td>
+                            <td>${insumosStr}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm dispatch-btn" data-id="${sol.id}">
+                                    <i class="fas fa-truck"></i> Despachar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                htmlContent += '</tbody></table>';
+                despacharContainer.innerHTML = htmlContent;
+
+            } catch (error) {
+                console.error('Error:', error);
+                despacharContainer.innerHTML = `<p class="no-records alert-danger">Error: ${error.message}</p>`;
+            }
+        }
+
+        // (NUEVO) Listener para el botón Despachar en la tabla
+        document.addEventListener('click', async function(e) {
+            const button = e.target.closest('.dispatch-btn');
+            if (button) {
+                const id_solicitud = button.dataset.id;
+                
+                // --- REEMPLAZO DE CONFIRM() ---
+                const confirmado = await showCustomConfirm(`¿Está seguro de despachar la Solicitud #${id_solicitud}?`);
+                if (!confirmado) return;
+                // --- FIN REEMPLAZO ---
+
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/despachos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ id_solicitud: parseInt(id_solicitud) })
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok) throw new Error(data.message || 'Error al registrar el despacho');
+
+                    // REEMPLAZAMOS ALERT()
+                    showCustomAlert('¡Despacho registrado y stock actualizado exitosamente!', 'success');
+                    cargarSolicitudesAprobadasParaDespacho(); // Recargar la lista
+                    
+                } catch (error) {
+                    // REEMPLAZAMOS ALERT()
+                    showCustomAlert(error.message, 'error');
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-truck"></i> Despachar';
+                }
+            }
+        });
+
+        // (ELIMINADO) Listener para el formulario viejo
+        if (formDespacho) {
+            formDespacho.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // REEMPLAZAMOS ALERT()
+                showCustomAlert('¡Esta sección ya no se usa! Por favor, utilice la tabla de solicitudes aprobadas.', 'warning');
+            });
+        }
+
+        // --- SECCIÓN 9: LÓGICA DE ACTUALIZAR STOCK ---
+        async function cargarStock() {
+            // ... (código sin cambios) ...
+        }
+
+        if (formStock) {
+            formStock.addEventListener('submit', async function(e) {
+                // ... (código sin cambios) ...
+                // REEMPLAZA LOS ALERTS DE AQUÍ SI LOS TIENES
+            });
+        }
+
+        // --- SECCIÓN 10: LÓGICA DE ORDEN DE COMPRA (DINÁMICA) ---
+        
+        // Cargar insumos con stock bajo en la tabla de PO
+        async function cargarOrdenesStockBajo() {
+            poTableBody.innerHTML = '<tr><td colspan="4" class="no-records">Buscando insumos con stock bajo...</td></tr>';
+            try {
+                // 1. Llamar al API (asumimos esta ruta, ¡verifica tu backend!)
+                const response = await fetch('http://localhost:3000/api/insumos/stock-bajo', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Error al cargar insumos');
+
+                const insumosBajos = await response.json();
+                poTableBody.innerHTML = '';
+
+                if (insumosBajos.length === 0) {
+                    poTableBody.innerHTML = '<tr><td colspan="4" class="no-records">¡Todo bien! No hay insumos con stock bajo.</td></tr>';
+                    return;
+                }
+
+                // 2. Dibujar la tabla con inputs editables
+                insumosBajos.forEach(insumo => {
+                    const row = document.createElement('tr');
+                    // El ID de la fila será el ID del insumo para encontrarlo fácil
+                    row.dataset.insumoId = insumo.id; 
+                    
+                    const stockActual = parseFloat(insumo.stock_actual);
+                    const stockMinimo = parseFloat(insumo.stock_minimo);
+                    // Recomendamos comprar el doble del mínimo, menos lo que ya hay
+                    const recomendado = (stockMinimo * 2) - stockActual; 
+
+                    row.innerHTML = `
+                        <td>${insumo.nombre}</td>
+                        <td>${stockActual} (${insumo.unidad_medida})</td>
+                        <td>${stockMinimo} (${insumo.unidad_medida})</td>
                         <td>
-                            <button type="button" class="btn btn-danger btn-sm remove-item-btn" data-index="${index}">
-                                <i class="fas fa-trash-alt"></i>
+                            <input type="number" 
+                                   class="form-control po-cantidad-input" 
+                                   value="${recomendado.toFixed(2)}" 
+                                   min="1" 
+                                   step="0.01">
+                        </td>
+                    `;
+                    poTableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                poTableBody.innerHTML = `<tr><td colspan="4" class="no-records">Error al cargar datos: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Event listener para el formulario de PO (ahora lee la tabla dinámica)
+        if (formOrdenCompra) {
+            formOrdenCompra.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const insumosParaComprar = [];
+                // 1. Leer todas las filas de la tabla
+                const filas = poTableBody.querySelectorAll('tr[data-insumo-id]');
+
+                if (filas.length === 0) {
+                    showCustomAlert('No hay insumos en la lista para generar una orden.', 'warning');
+                    return;
+                }
+
+                filas.forEach(fila => {
+                    const id_insumo = parseInt(fila.dataset.insumoId);
+                    const cantidad = parseFloat(fila.querySelector('.po-cantidad-input').value);
+
+                    if (cantidad > 0) {
+                        insumosParaComprar.push({ id_insumo, cantidad });
+                    }
+                });
+
+                if (insumosParaComprar.length === 0) {
+                    showCustomAlert('No se ha especificado una cantidad para comprar en ningún insumo.', 'warning');
+                    return;
+                }
+
+                // 2. Enviar al API
+                try {
+                    const response = await fetch('http://localhost:3000/api/ordenes-compra', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ insumos: insumosParaComprar })
+                    });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Error al crear la orden');
+                    
+                    showCustomAlert('¡Orden de Compra generada exitosamente!', 'success');
+                    cargarOrdenesStockBajo(); // Recargar la lista (debería estar vacía ahora)
+                    
+                } catch (error) {
+                    showCustomAlert(`Error: ${error.message}`, 'error');
+                }
+            });
+        }
+
+// --- SECCIÓN 11: LÓGICA DE VALIDAR ÓRDENES (Compras) ---
+        async function cargarOrdenesPendientes() {
+            validateTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Cargando órdenes pendientes...</td></tr>';
+            try {
+                const response = await fetch('http://localhost:3000/api/ordenes-compra/pendientes', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.message || 'Error al cargar órdenes pendientes');
+                }
+
+                const ordenes = await response.json();
+                validateTableBody.innerHTML = '';
+
+                if (ordenes.length === 0) {
+                    validateTableBody.innerHTML = '<tr><td colspan="5" class="no-records">No hay órdenes pendientes de validación.</td></tr>';
+                    return;
+                }
+
+                ordenes.forEach(orden => {
+                    const row = document.createElement('tr');
+                    const fecha = new Date(orden.createdAt).toLocaleString();
+                    
+                    const nombreSolicitante = orden.solicitante?.nombre || '<i style="color: #dc3545;">Usuario Eliminado</i>';
+                    
+                    // --- INICIO DE LA CORRECCIÓN (Bug 'NaN') ---
+                    // Verificamos si 'item.Orden_Compra_Detalle' existe antes de usarlo
+                    const insumosStr = orden.insumos?.map(item => {
+                        const detalle = item.Orden_Compra_Detalle;
+                        const cantidad = detalle ? parseFloat(detalle.cantidad_comprar) : 0;
+                        return `${item.nombre} (Cant: ${isNaN(cantidad) ? '??' : cantidad})`;
+                    }).join(', ') || '<i style="color: #dc3545;">Error de Insumos</i>';
+                    // --- FIN DE LA CORRECCIÓN ---
+
+                    row.innerHTML = `
+                        <td>${orden.id}</td>
+                        <td>${fecha}</td>
+                        <td>${nombreSolicitante}</td>
+                        <td>${insumosStr}</td> <td style="display: flex; gap: 5px;">
+                            <button class="btn btn-success btn-sm validate-btn" data-id="${orden.id}" title="Validar Orden">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm reject-po-btn" data-id="${orden.id}" title="Rechazar Orden">
+                                <i class="fas fa-times"></i>
                             </button>
                         </td>
                     `;
-                    requestItemsTable.appendChild(row);
+                    validateTableBody.appendChild(row);
                 });
+
+            } catch (error) {
+                console.error('Error:', error);
+                validateTableBody.innerHTML = `<tr><td colspan="5" class="no-records">Error al cargar datos: ${error.message}</td></tr>`;
             }
+        }
 
-            // Event listener para botones de eliminar en la tabla de solicitud
-            requestItemsTable.addEventListener('click', function(e) {
-                const button = e.target.closest('.remove-item-btn');
-                if (button) {
-                    const index = parseInt(button.dataset.index);
-                    insumosParaSolicitud.splice(index, 1);
-                    actualizarTablaSolicitud();
-                }
-            });
-
-            // Event listener para el formulario principal de solicitud
-            if (formSolicitud) {
-                formSolicitud.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    if (insumosParaSolicitud.length === 0) {
-                        alert('Error: Debe añadir al menos un insumo a la solicitud.');
-                        return;
-                    }
-                    const insumosParaAPI = insumosParaSolicitud.map(item => ({
-                        id_insumo: item.id_insumo,
-                        cantidad: item.cantidad
-                    }));
-                    const comentarios = document.getElementById('request-comments').value;
-                    try {
-                        const response = await fetch('http://localhost:3000/api/solicitudes', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                            body: JSON.stringify({ insumos: insumosParaAPI, comentarios })
-                        });
-                        const data = await response.json();
-                        if (response.ok) {
-                            alert('¡Solicitud registrada exitosamente! (ID: ' + data.solicitud.id + ')');
-                            formSolicitud.reset();
-                            limpiarTablaSolicitud();
-                            showView('view-welcome');
-                        } else {
-                            alert('Error: ' + data.message);
-                        }
-                    } catch (error) {
-                        alert('Ocurrió un error al conectar con el servidor.');
-                    }
-                });
+        validateTableBody.addEventListener('click', async function(e) {
+            const validateBtn = e.target.closest('.validate-btn');
+            const rejectBtn = e.target.closest('.reject-po-btn'); // Renombrada para claridad
+            
+            let action = null;
+            let button = null;
+            
+            if (validateBtn) {
+                action = 'validar';
+                button = validateBtn;
+            } else if (rejectBtn) {
+                action = 'rechazar';
+                button = rejectBtn;
             }
             
-            // --- (MODIFICADO) SECCIÓN 8: LÓGICA FORMULARIO DESPACHO ---
+            if (!action) return;
             
-            // Función para cargar solicitudes aprobadas para despacho
-            async function cargarSolicitudesAprobadasParaDespacho() {
-                const despacharContainer = document.getElementById('dispatch-list-container'); // Contenedor que vamos a crear en HTML
+            const id = button.dataset.id;
+            
+            const confirmado = await showCustomConfirm(`¿Está seguro de ${action} la orden de compra #${id}?`);
+            if (!confirmado) return;
+
+            try {
+                // --- INICIO DE LA CORRECCIÓN (Bug '<!DOCTYPE...') ---
+                // Volvemos a usar la ruta original de tu API: POST .../validar/:id
+                const response = await fetch(`http://localhost:3000/api/ordenes-compra/${action}/${id}`, {
+                    method: 'POST', // <-- MÉTODO CORREGIDO (vuelve a POST)
+                    headers: { 
+                        'Authorization': `Bearer ${token}`
+                        // No se necesita Content-Type ni body para esta ruta
+                    }
+                });
+                // --- FIN DE LA CORRECCIÓN ---
                 
-                // Si el contenedor no existe, no hacemos nada (esto evita un error si usamos esta función en el formulario antiguo)
-                if (!despacharContainer) return; 
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Error al procesar la orden');
 
-                despacharContainer.innerHTML = '<h4>Cargando solicitudes...</h4>';
+                showCustomAlert(`¡Orden #${id} ${action === 'validar' ? 'validada' : 'rechazada'} exitosamente!`, 'success');
+                cargarOrdenesPendientes(); // Recargar la lista
 
-                try {
-                    // Reutilizamos la ruta GET /api/solicitudes/aprobadas que creamos
-                    const response = await fetch('http://localhost:3000/api/solicitudes/aprobadas', {
-                        method: 'GET',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (!response.ok) throw new Error('Error al cargar solicitudes aprobadas');
-                    
-                    const solicitudes = await response.json();
-                    
-                    if (solicitudes.length === 0) {
-                        despacharContainer.innerHTML = '<p class="no-records">No hay solicitudes aprobadas listas para despachar.</p>';
-                        return;
-                    }
-
-                    // Construir la tabla con las solicitudes aprobadas
-                    let htmlContent = '<p style="font-weight: 600; margin-bottom: 10px;">Seleccione una solicitud de la lista:</p>';
-                    htmlContent += '<table class="data-table"><thead><tr><th>ID</th><th>Solicitante</th><th>Detalle</th><th>Acción</th></tr></thead><tbody>';
-
-                    solicitudes.forEach(sol => {
-                        const insumosStr = sol.insumos.map(
-                            item => `${item.nombre} (${parseFloat(item.Solicitud_Detalle.cantidad_solicitada)})`
-                        ).join(', ');
-                        
-                        htmlContent += `
-                            <tr>
-                                <td>${sol.id}</td>
-                                <td>${sol.solicitante.nombre}</td>
-                                <td>${insumosStr}</td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm dispatch-btn" data-id="${sol.id}">
-                                        <i class="fas fa-truck"></i> Despachar
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-
-                    htmlContent += '</tbody></table>';
-                    despacharContainer.innerHTML = htmlContent;
-
-                } catch (error) {
-                    console.error('Error:', error);
-                    despacharContainer.innerHTML = `<p class="no-records alert-danger">Error: ${error.message}</p>`;
+            } catch (error) {
+                // Este error ('Unexpected token <') pasará si la ruta POST .../:action/:id no existe
+                // y el servidor devuelve HTML.
+                if (error instanceof SyntaxError) {
+                    showCustomAlert('Error: La ruta en el backend es incorrecta. El servidor devolvió HTML.', 'error');
+                } else {
+                    showCustomAlert(`Error: ${error.message}`, 'error');
                 }
             }
-
-            // (NUEVO) Listener para el botón Despachar en la tabla
-            document.addEventListener('click', async function(e) {
-                const button = e.target.closest('.dispatch-btn');
-                if (button) {
-                    const id_solicitud = button.dataset.id;
-                    if (!confirm(`¿Está seguro de despachar la Solicitud #${id_solicitud}?`)) return;
-
-                    button.disabled = true;
-                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-                    try {
-                        const response = await fetch('http://localhost:3000/api/despachos', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                            body: JSON.stringify({ id_solicitud: parseInt(id_solicitud) })
-                        });
-                        const data = await response.json();
-
-                        if (!response.ok) throw new Error(data.message || 'Error al registrar el despacho');
-
-                        alert('¡Despacho registrado y stock actualizado exitosamente!');
-                        cargarSolicitudesAprobadasParaDespacho(); // Recargar la lista
-                        
-                    } catch (error) {
-                        alert(`Error: ${error.message}`);
-                        button.disabled = false;
-                        button.innerHTML = '<i class="fas fa-truck"></i> Despachar';
-                    }
-                }
-            });
-
-            // (ELIMINADO) Listener para el formulario viejo
-            if (formDespacho) {
-                formDespacho.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert('¡Esta sección ya no se usa! Por favor, utilice la tabla de solicitudes aprobadas.');
-                });
-            }
-
-            // --- SECCIÓN 9: LÓGICA DE ACTUALIZAR STOCK ---
-            async function cargarStock() {
-                // ... (código sin cambios) ...
-            }
-
-            if (formStock) {
-                formStock.addEventListener('submit', async function(e) {
-                    // ... (código sin cambios) ...
-                });
-            }
-
-            // --- SECCIÓN 10: LÓGICA DE ORDEN DE COMPRA (DINÁMICA) ---
-            
-            // Cargar insumos con stock bajo en la tabla de PO
-            async function cargarOrdenesStockBajo() {
-                // ... (código sin cambios) ...
-            }
-
-            // Event listener para el formulario de PO (ahora lee la tabla dinámica)
-            if (formOrdenCompra) {
-                formOrdenCompra.addEventListener('submit', async function(e) {
-                    // ... (código sin cambios) ...
-                });
-            }
-
-            // --- SECCIÓN 11: LÓGICA DE VALIDAR ÓRDENES (Compras) ---
-            async function cargarOrdenesPendientes() {
-                // ... (código sin cambios) ...
-            }
-
-            validateTableBody.addEventListener('click', async function(e) {
-                // ... (código sin cambios) ...
-            });
-
-            // --- SECCIÓN 12: LÓGICA DE APROBAR SOLICITUDES (Jefe Almacén) ---
-            async function cargarSolicitudesPendientes() {
-                // ... (código sin cambios) ...
-            }
-
-            approveTableBody.addEventListener('click', async function(e) {
-                // ... (código sin cambios) ...
-            });
-
-
-            // --- SECCIÓN 13: LÓGICA DE REGISTRAR ENTRADA (Almacén) ---
-            async function cargarOrdenesValidadas() {
-                // ... (código sin cambios) ...
-            }
-
-            entryTableBody.addEventListener('click', async function(e) {
-                // ... (código sin cambios) ...
-            });
-            
-            // --- SECCIÓN 14: LÓGICA DE VERIFICAR DESPACHO (Chef) ---
-            async function cargarDespachosPendientes() {
-                // ... (código sin cambios) ...
-            }
-
-            verifyDispatchTableBody.addEventListener('click', async function(e) {
-                // ... (código sin cambios) ...
-            });
-
-            // --- SECCIÓN 15: LÓGICA DE REGISTRAR MERMA ---
-            async function cargarInsumosParaMerma() {
-                // ... (código sin cambios) ...
-            }
-
-            if (formMerma) {
-                formMerma.addEventListener('submit', async function(e) {
-                    // ... (código sin cambios) ...
-                });
-            }
-            
-            // --- SECCIÓN 16: LÓGICA DE GESTIONAR INSUMOS ---
-            
-            // Cargar la tabla de insumos para gestionar
-            async function cargarGestionarInsumos() {
-                // ... (código sin cambios) ...
-            }
-
-            // Event listener para el formulario de CREAR insumo
-            if (formCrearInsumo) {
-                formCrearInsumo.addEventListener('submit', async function(e) {
-                    // ... (código sin cambios) ...
-                });
-            }
-            
-            // Event listener para los botones de ELIMINAR insumo
-            gestionarInsumosTable.addEventListener('click', async function(e) {
-                // ... (código sin cambios) ...
-            });
-
-
-            // --- Carga inicial ---
-            showView('view-welcome');
-            
         });
-    </script>
+
+        // --- SECCIÓN 12: LÓGICA DE APROBAR SOLICITUDES (Jefe Almacén) ---
+        async function cargarSolicitudesPendientes() {
+            // 1. Mostrar mensaje de carga
+            approveTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Cargando solicitudes pendientes...</td></tr>';
+            
+            try {
+                // 2. Llamar al API para obtener las solicitudes pendientes
+                const response = await fetch('http://localhost:3000/api/solicitudes/pendientes', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Error al cargar las solicitudes');
+                
+                const solicitudes = await response.json();
+                approveTableBody.innerHTML = ''; // Limpiar la tabla
+
+                // 3. Verificar si hay solicitudes
+                if (solicitudes.length === 0) {
+                    approveTableBody.innerHTML = '<tr><td colspan="5" class="no-records">No hay solicitudes pendientes de aprobación.</td></tr>';
+                    return;
+                }
+
+                // 4. Dibujar cada solicitud en la tabla
+                solicitudes.forEach(sol => {
+                    const row = document.createElement('tr');
+                    // Formatear la fecha
+                    const fecha = new Date(sol.createdAt).toLocaleString();
+                    // Formatear la lista de insumos
+                    const insumosStr = sol.insumos.map(
+                        item => `${item.nombre} (${parseFloat(item.Solicitud_Detalle.cantidad_solicitada)})`
+                    ).join(', ');
+
+                    row.innerHTML = `
+                        <td>${sol.id}</td>
+                        <td>${fecha}</td>
+                        <td>${sol.solicitante.nombre}</td>
+                        <td>${insumosStr}</td>
+                        <td style="display: flex; gap: 5px;">
+                            <button class="btn btn-success btn-sm approve-btn" data-id="${sol.id}" title="Aprobar">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm reject-btn" data-id="${sol.id}" title="Rechazar">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </td>
+                    `;
+                    approveTableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                approveTableBody.innerHTML = `<tr><td colspan="5" class="no-records">Error al cargar los datos: ${error.message}</td></tr>`;
+            }
+        }
+
+
+        approveTableBody.addEventListener('click', async function(e) {
+            const approveBtn = e.target.closest('.approve-btn');
+            const rejectBtn = e.target.closest('.reject-btn');
+            
+            let action = null;
+            let button = null;
+            let nuevoEstado = '';
+            
+            if (approveBtn) {
+                action = 'aprobar';
+                button = approveBtn;
+                nuevoEstado = 'Aprobada'; // El estado que espera tu backend
+            } else if (rejectBtn) {
+                action = 'rechazar';
+                button = rejectBtn;
+                nuevoEstado = 'Rechazada'; // El estado que espera tu backend
+            }
+
+            if (!action) return; // Si no se hizo clic en un botón, no hacer nada
+
+            const id = button.dataset.id;
+            
+            // --- REEMPLAZO DE CONFIRM() ---
+            const confirmado = await showCustomConfirm(`¿Está seguro de ${action} la solicitud #${id}?`);
+            if (!confirmado) return;
+            // --- FIN REEMPLAZO ---
+
+            try {
+                // --- INICIO DE LA CORRECCIÓN ---
+                // Ahora llamamos a la ruta estándar '/api/solicitudes/:id'
+                // Usamos 'PATCH' (el estándar para actualizaciones parciales)
+                // Y enviamos el estado en el body.
+                const response = await fetch(`http://localhost:3000/api/solicitudes/${id}`, {
+                    method: 'PATCH', // <-- CAMBIADO DE POST (Prueba con PATCH o PUT)
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json' // <-- AÑADIDO
+                    },
+                    body: JSON.stringify({ estado: nuevoEstado }) // <-- AÑADIDO: Enviamos el nuevo estado
+                });
+                // --- FIN DE LA CORRECCIÓN ---
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // REEMPLAZAMOS ALERT()
+                    showCustomAlert(`¡Solicitud #${id} ${action === 'aprobar' ? 'aprobada' : 'rechazada'} exitosamente!`, 'success');
+                    cargarSolicitudesPendientes(); // Recargar la lista
+                } else {
+                    // Si el backend responde con un error (ej: 400, 404)
+                    // REEMPLAZAMOS ALERT()
+                    showCustomAlert('Error: ' + (data.message || 'No se pudo actualizar la solicitud.'), 'error');
+                }
+
+            } catch (error) {
+                // Si el fetch falla (error de red, CORS, etc.)
+                console.error('Error detallado:', error);
+                // REEMPLAZAMOS ALERT()
+                showCustomAlert('Error de conexión al ' + action + ' la solicitud. Revisa la consola (F12) y tu código backend.', 'error');
+            }
+        });
+
+
+// --- SECCIÓN 13: LÓGICA DE REGISTRAR ENTRADA (Almacén) ---
+        async function cargarOrdenesValidadas() {
+            entryTableBody.innerHTML = '<tr><td colspan="4" class="no-records">Cargando órdenes validadas...</td></tr>';
+            try {
+                // 1. Esta es la llamada al backend que faltaba
+                const response = await fetch('http://localhost:3000/api/ordenes-compra/validadas', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.message || 'Error al cargar órdenes validadas');
+                }
+
+                const ordenes = await response.json();
+                entryTableBody.innerHTML = ''; // Limpiar la tabla
+
+                // 2. Mensaje si no hay órdenes
+                if (ordenes.length === 0) {
+                    entryTableBody.innerHTML = '<tr><td colspan="4" class="no-records">No hay órdenes validadas listas para recibir.</td></tr>';
+                    return;
+                }
+
+                // 3. Dibujar la tabla con los datos
+                ordenes.forEach(orden => {
+                    const row = document.createElement('tr');
+                    
+                    // Asegúrate que tu backend envíe 'validador.nombre'
+                    const nombreValidador = orden.validador?.nombre || '<i style="color: #999;">(No disponible)</i>'; 
+                    
+                    const insumosStr = orden.insumos?.map(item => {
+                        const detalle = item.Orden_Compra_Detalle;
+                        const cantidad = detalle ? parseFloat(detalle.cantidad_comprar) : 0;
+                        return `${item.nombre} (Cant: ${isNaN(cantidad) ? '??' : cantidad})`;
+                    }).join(', ') || 'Error de Insumos';
+
+                    // Columnas: ID Orden, Validada por, Insumos, Acción
+                    row.innerHTML = `
+                        <td>${orden.id}</td>
+                        <td>${nombreValidador}</td>
+                        <td>${insumosStr}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm entry-btn" data-id="${orden.id}" title="Registrar Entrada">
+                                <i class="fas fa-dolly-flatbed"></i> Registrar
+                            </button>
+                        </td>
+                    `;
+                    entryTableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error en cargarOrdenesValidadas:', error);
+                // 4. Mostrar el error en la tabla
+                entryTableBody.innerHTML = `<tr><td colspan="4" class="no-records">Error al cargar datos: ${error.message}</td></tr>`;
+            }
+        }
+
+        entryTableBody.addEventListener('click', async function(e) {
+            const button = e.target.closest('.entry-btn');
+            if (!button) return;
+            const id = button.dataset.id;
+            
+            // --- REEMPLAZO DE CONFIRM() ---
+            const confirmado = await showCustomConfirm(`¿Está seguro de registrar la entrada para la orden #${id}?`);
+            if (!confirmado) return;
+            // --- FIN REEMPLAZO ---
+            
+            try {
+                // RUTA CORREGIDA: Usa el ID en la URL, no envía body
+                const response = await fetch(`http://localhost:3000/api/ordenes-compra/${id}/registrar-entrada`, {
+                    method: 'POST', 
+                    headers: { 
+                        'Authorization': `Bearer ${token}` 
+                    }
+                });
+
+                const data = await response.json(); 
+                if (!response.ok) throw new Error(data.message || 'Error al registrar');
+                
+                showCustomAlert('¡Entrada registrada y stock actualizado!', 'success');
+                cargarOrdenesValidadas(); // Recargar la lista
+            
+            } catch (error) {
+                console.error('Error al registrar entrada:', error);
+                showCustomAlert(`Error: ${error.message}`, 'error');
+            }
+        });
+        
+// --- SECCIÓN 14: LÓGICA DE VERIFICAR DESPACHO (Chef) ---
+        async function cargarDespachosPendientes() {
+            verifyDispatchTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Cargando despachos pendientes...</td></tr>';
+            try {
+                // 1. Llamar al API para obtener los despachos pendientes de verificación
+                const response = await fetch('http://localhost:3000/api/despachos/pendientes-verificacion', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Error al cargar los despachos');
+                
+                const despachos = await response.json();
+                verifyDispatchTableBody.innerHTML = ''; // Limpiar la tabla
+
+                // 2. Verificar si hay despachos
+                if (despachos.length === 0) {
+                    verifyDispatchTableBody.innerHTML = '<tr><td colspan="5" class="no-records">No hay despachos pendientes de verificar.</td></tr>';
+                    return;
+                }
+
+                // 3. Dibujar cada despacho en la tabla
+                despachos.forEach(desp => {
+                    const row = document.createElement('tr');
+                    const fecha = new Date(desp.createdAt).toLocaleString();
+                    
+                    // Formatear la lista de insumos recibidos
+                    const insumosStr = desp.insumos.map(
+                        item => `${item.nombre} (${parseFloat(item.Despacho_Detalle.cantidad_despachada)})`
+                    ).join(', ');
+
+                    row.innerHTML = `
+                        <td>${desp.id}</td>
+                        <td>${fecha}</td>
+                        <td>${desp.encargado.nombre}</td>
+                        <td>${insumosStr}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm verify-btn" data-id="${desp.id}" title="Verificar Recepción">
+                                <i class="fas fa-check-double"></i> Verificar
+                            </button>
+                        </td>
+                    `;
+                    verifyDispatchTableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                verifyDispatchTableBody.innerHTML = `<tr><td colspan="5" class="no-records">Error al cargar los datos: ${error.message}</td></tr>`;
+            }
+        }
+
+        verifyDispatchTableBody.addEventListener('click', async function(e) {
+            const button = e.target.closest('.verify-btn');
+            if (!button) return;
+            const id = button.dataset.id;
+            
+            // --- REEMPLAZO DE CONFIRM() ---
+            const confirmado = await showCustomConfirm(`¿Está seguro de verificar la recepción del despacho #${id}?`);
+            if (!confirmado) return;
+            // --- FIN REEMPLAZO ---
+
+            try {
+                // 2. Llamar al API para verificar (usamos PUT basado en tu controller)
+                const response = await fetch(`http://localhost:3000/api/despachos/${id}/verificar`, {
+                    method: 'PUT', // Usamos PUT como define tu despachoController.js
+                    headers: { 
+                        'Authorization': `Bearer ${token}`
+                        // No se necesita Content-Type porque no enviamos body
+                    }
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Error al verificar');
+                
+                showCustomAlert('¡Despacho verificado exitosamente!', 'success');
+                cargarDespachosPendientes(); // Recargar la lista
+            } catch (error) {
+                showCustomAlert(`Error: ${error.message}`, 'error');
+            }
+        }); 
+
+        // --- SECCIÓN 15: LÓGICA DE REGISTRAR MERMA ---
+        async function cargarInsumosParaMerma() {
+            mermaInsumoSelect.innerHTML = '<option value="">Cargando insumos...</option>';
+            try {
+                // ... (código sin cambios) ...
+            } catch (error) {
+                // ... (código sin cambios) ...
+            }
+        }
+
+        if (formMerma) {
+            formMerma.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const id_insumo = mermaInsumoSelect.value;
+                const cantidad = parseFloat(document.getElementById('merma-cantidad').value);
+                const motivo = document.getElementById('merma-motivo').value;
+                if (!id_insumo || !cantidad || !motivo) {
+                    showCustomAlert('Todos los campos son obligatorios.', 'warning');
+                    return;
+                }
+                try {
+                    // ... (código del fetch) ...
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Error al registrar');
+                    showCustomAlert('¡Merma registrada y stock actualizado!', 'success');
+                    formMerma.reset();
+                    cargarInsumosParaMerma();
+                } catch (error) {
+                    showCustomAlert(`Error: ${error.message}`, 'error');
+                }
+            });
+        }
+        
+        // --- SECCIÓN 16: LÓGICA DE GESTIONAR INSUMOS ---
+        
+        // Cargar la tabla de insumos para gestionar
+        async function cargarGestionarInsumos() {
+            gestionarInsumosTable.innerHTML = '<tr><td colspan="5" class="no-records">Cargando catálogo...</td></tr>';
+            try {
+                // ... (código sin cambios) ...
+            } catch (error) {
+                // ... (código sin cambios) ...
+            }
+        }
+
+        // Event listener para el formulario de CREAR insumo
+        if (formCrearInsumo) {
+            formCrearInsumo.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const nuevoInsumo = {
+                    nombre: document.getElementById('insumo-nombre').value,
+                    categoria: document.getElementById('insumo-categoria').value,
+                    stock_actual: parseFloat(document.getElementById('insumo-stock-actual').value),
+                    stock_minimo: parseFloat(document.getElementById('insumo-stock-minimo').value),
+                    unidad_medida: document.getElementById('insumo-unidad').value,
+                    descripcion: document.getElementById('insumo-desc').value
+                };
+                try {
+                    // ... (código del fetch) ...
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Error al crear');
+                    showCustomAlert('¡Insumo creado exitosamente!', 'success');
+                    formCrearInsumo.reset();
+                    cargarGestionarInsumos();
+                    cargarInsumosParaSolicitud(); // Recargar dropdowns
+                    cargarInsumosParaMerma(); // Recargar dropdowns
+                } catch (error) {
+                    showCustomAlert(`Error: ${error.message}`, 'error');
+                }
+            });
+        }
+        
+        // Event listener para los botones de ELIMINAR insumo
+        gestionarInsumosTable.addEventListener('click', async function(e) {
+            const button = e.target.closest('.delete-insumo-btn');
+            if (!button) return;
+            const id = button.dataset.id;
+            
+            // --- REEMPLAZO DE CONFIRM() ---
+            const confirmado = await showCustomConfirm(`¿Está seguro de eliminar el insumo #${id}? Esta acción no se puede deshacer.`);
+            if (!confirmado) return;
+            // --- FIN REEMPLAZO ---
+            
+            try {
+                // ... (código del fetch) ...
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Error al eliminar');
+                showCustomAlert('¡Insumo eliminado!', 'success');
+                cargarGestionarInsumos();
+                cargarInsumosParaSolicitud(); // Recargar dropdowns
+                cargarInsumosParaMerma(); // Recargar dropdowns
+            } catch (error) {
+                showCustomAlert(`Error: ${error.message}`, 'error');
+            }
+        });
+
+
+        // --- Carga inicial ---
+        showView('view-welcome');
+        
+    });
+</script>
 </body>
 </html>
