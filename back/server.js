@@ -1,11 +1,10 @@
 // -----------------------------------------------------------------
-// ▼▼▼ CÓDIGO BUENO (El que debes usar) ▼▼▼
+// ▼▼▼ CÓDIGO CORRECTO PARA VERCEL ▼▼▼
 // -----------------------------------------------------------------
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const db = require('./src/config/database');
-// ❌ const path = require('path'); // <-- 1. LÍNEA ELIMINADA
 
 // Cargar variables de entorno
 dotenv.config();
@@ -29,8 +28,6 @@ app.use(cors({
 }));
 app.use(express.json()); 
 
-// ❌ app.use(express.static(path.join(__dirname, '../front'))); // <-- 2. LÍNEA ELIMINADA
-
 // Rutas API
 app.use('/api/auth', authRoutes);
 app.use('/api/solicitudes', solicitudRoutes);
@@ -40,14 +37,14 @@ app.use('/api/ordenes-compra', ordenCompraRoutes);
 app.use('/api/reportes', reporteRoutes);
 app.use('/api/historial', historialRoutes);
 
-// Sincronizar base de datos y levantar servidor
+// --- ESTE ES EL BLOQUE CORRECTO PARA VERCEL ---
+// Sincronizar la base de datos (¡aún lo necesitamos!)
 db.sync({ force: false }).then(() => {
     console.log('Base de datos conectada y sincronizada.');
-    // Vercel asignará el puerto automáticamente, pero está bien tener un fallback
-    const PORT = process.env.PORT || 3001; 
-    app.listen(PORT, () => {
-        console.log(`Servidor corriendo en el puerto ${PORT}`);
-    });
 }).catch(error => {
     console.error('No se pudo conectar a la base de datos:', error);
 });
+
+// Exportar la 'app' para que Vercel pueda usarla
+module.exports = app;
+// --- FIN DEL BLOQUE CORRECTO ---
