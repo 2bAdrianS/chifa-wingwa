@@ -166,6 +166,8 @@
         </form>
     </div>
 
+    <script src="config.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('login-form');
@@ -193,7 +195,10 @@
                 errorMessageDiv.style.display = 'none';
 
                 try {
-                    const response = await fetch('http://localhost:3000/api/auth/login', {
+                    // ================================================================
+                    // PASO 2: Usar la variable API_URL de config.js (con backticks `)
+                    // ================================================================
+                    const response = await fetch(`${API_URL}/auth/login`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -208,8 +213,10 @@
                         localStorage.setItem('token', data.token);
                         localStorage.setItem('user', JSON.stringify(data.usuario));
 
-                        // Redirigir al panel principal
-                        window.location.href = 'Front.html';
+                        // ================================================================
+                        // PASO 3: Corregir la redirección a 'index.html'
+                        // ================================================================
+                        window.location.href = 'index.html';
 
                     } else {
                         // Mostrar mensaje de error del servidor

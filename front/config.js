@@ -1,0 +1,1 @@
+const API_URL = 'https://chifa-wingwa.vercel.app/api';

@@ -6,6 +6,7 @@
     <title>Wing Ya Chifa - Sistema de Gestión</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* --- TU CSS (SIN CAMBIOS) --- */
         * {
             margin: 0;
             padding: 0;
@@ -345,6 +346,7 @@
         .modal-button.modal-success { background-color: #28a745; color: white; }
         .modal-button.modal-warning { background-color: #ffc107; color: #333; }
         /* --- FIN ESTILOS MODALES --- */
+        /* --- FIN DE TU CSS --- */
     </style>
 </head>
 <body>
@@ -533,7 +535,7 @@
                         </tr>
                     </thead>
                     <tbody id="verify-dispatch-table-body">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -552,7 +554,7 @@
                         </tr>
                     </thead>
                     <tbody id="approve-table-body">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -614,7 +616,7 @@
                             </tr> 
                         </thead>
                         <tbody id="po-table-body">
-                            </tbody>
+                        </tbody>
                     </table>
                     <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
                         <i class="fas fa-check-circle"></i> Generar Orden
@@ -636,7 +638,7 @@
                         </tr>
                     </thead>
                     <tbody id="entry-table-body">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -655,7 +657,7 @@
                         </tr>
                     </thead>
                     <tbody id="validate-table-body">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -711,7 +713,7 @@
                         </tr>
                     </thead>
                     <tbody id="gestionar-insumos-table">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -731,7 +733,7 @@
                             </tr>
                         </thead>
                         <tbody id="stock-table-body">
-                            </tbody>
+                        </tbody>
                     </table>
                     <button type="submit" id="btn-actualizar-stock" class="btn btn-primary" style="margin-top: 20px;">
                         <i class="fas fa-sync-alt"></i> Actualizar Stock
@@ -781,7 +783,7 @@
                         </tr>
                     </thead>
                     <tbody id="history-table-body">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -837,6 +839,9 @@
             </div>
         </div>
     </div>
+    <script src="config.js"></script>
+
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
             
@@ -1095,7 +1100,10 @@
         async function cargarHistorial() {
             historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Cargando historial...</td></tr>';
             try {
-                const response = await fetch('http://localhost:3000/api/historial', {
+                // ==========================================
+                // CAMBIO 2: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/historial`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1131,7 +1139,10 @@
         async function cargarInsumosParaSolicitud() {
             requestInsumoSelect.innerHTML = '<option value="">Cargando insumos...</option>';
             try {
-                const response = await fetch('http://localhost:3000/api/insumos', {
+                // ==========================================
+                // CAMBIO 3: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/insumos`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1238,7 +1249,10 @@
                 }));
                 const comentarios = document.getElementById('request-comments').value;
                 try {
-                    const response = await fetch('http://localhost:3000/api/solicitudes', {
+                    // ==========================================
+                    // CAMBIO 4: Usar API_URL
+                    // ==========================================
+                    const response = await fetch(`${API_URL}/solicitudes`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                         body: JSON.stringify({ insumos: insumosParaAPI, comentarios })
@@ -1274,7 +1288,10 @@
 
             try {
                 // Reutilizamos la ruta GET /api/solicitudes/aprobadas que creamos
-                const response = await fetch('http://localhost:3000/api/solicitudes/aprobadas', {
+                // ==========================================
+                // CAMBIO 5: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/solicitudes/aprobadas`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1333,7 +1350,10 @@
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
                 try {
-                    const response = await fetch('http://localhost:3000/api/despachos', {
+                    // ==========================================
+                    // CAMBIO 6: Usar API_URL
+                    // ==========================================
+                    const response = await fetch(`${API_URL}/despachos`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                         body: JSON.stringify({ id_solicitud: parseInt(id_solicitud) })
@@ -1367,12 +1387,13 @@
         // --- SECCIÓN 9: LÓGICA DE ACTUALIZAR STOCK ---
         async function cargarStock() {
             // ... (código sin cambios) ...
+            // ¡OJO! Si tienes un fetch() aquí, ¡cámbialo a API_URL!
         }
 
         if (formStock) {
             formStock.addEventListener('submit', async function(e) {
                 // ... (código sin cambios) ...
-                // REEMPLAZA LOS ALERTS DE AQUÍ SI LOS TIENES
+                // ¡OJO! Si tienes un fetch() aquí, ¡cámbialo a API_URL!
             });
         }
 
@@ -1382,8 +1403,11 @@
         async function cargarOrdenesStockBajo() {
             poTableBody.innerHTML = '<tr><td colspan="4" class="no-records">Buscando insumos con stock bajo...</td></tr>';
             try {
-                // 1. Llamar al API (asumimos esta ruta, ¡verifica tu backend!)
-                const response = await fetch('http://localhost:3000/api/insumos/stock-bajo', {
+                // 1. Llamar al API 
+                // ==========================================
+                // CAMBIO 7: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/insumos/stock-bajo`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1459,7 +1483,10 @@
 
                 // 2. Enviar al API
                 try {
-                    const response = await fetch('http://localhost:3000/api/ordenes-compra', {
+                    // ==========================================
+                    // CAMBIO 8: Usar API_URL
+                    // ==========================================
+                    const response = await fetch(`${API_URL}/ordenes-compra`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                         body: JSON.stringify({ insumos: insumosParaComprar })
@@ -1480,7 +1507,10 @@
         async function cargarOrdenesPendientes() {
             validateTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Cargando órdenes pendientes...</td></tr>';
             try {
-                const response = await fetch('http://localhost:3000/api/ordenes-compra/pendientes', {
+                // ==========================================
+                // CAMBIO 9: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/ordenes-compra/pendientes`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1558,9 +1588,10 @@
             if (!confirmado) return;
 
             try {
-                // --- INICIO DE LA CORRECCIÓN (Bug '<!DOCTYPE...') ---
-                // Volvemos a usar la ruta original de tu API: POST .../validar/:id
-                const response = await fetch(`http://localhost:3000/api/ordenes-compra/${action}/${id}`, {
+                // ==========================================
+                // CAMBIO 10: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/ordenes-compra/${action}/${id}`, {
                     method: 'POST', // <-- MÉTODO CORREGIDO (vuelve a POST)
                     headers: { 
                         'Authorization': `Bearer ${token}`
@@ -1593,7 +1624,10 @@
             
             try {
                 // 2. Llamar al API para obtener las solicitudes pendientes
-                const response = await fetch('http://localhost:3000/api/solicitudes/pendientes', {
+                // ==========================================
+                // CAMBIO 11: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/solicitudes/pendientes`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1671,11 +1705,10 @@
             // --- FIN REEMPLAZO ---
 
             try {
-                // --- INICIO DE LA CORRECCIÓN ---
-                // Ahora llamamos a la ruta estándar '/api/solicitudes/:id'
-                // Usamos 'PATCH' (el estándar para actualizaciones parciales)
-                // Y enviamos el estado en el body.
-                const response = await fetch(`http://localhost:3000/api/solicitudes/${id}`, {
+                // ==========================================
+                // CAMBIO 12: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/solicitudes/${id}`, {
                     method: 'PATCH', // <-- CAMBIADO DE POST (Prueba con PATCH o PUT)
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -1711,7 +1744,10 @@
             entryTableBody.innerHTML = '<tr><td colspan="4" class="no-records">Cargando órdenes validadas...</td></tr>';
             try {
                 // 1. Esta es la llamada al backend que faltaba
-                const response = await fetch('http://localhost:3000/api/ordenes-compra/validadas', {
+                // ==========================================
+                // CAMBIO 13: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/ordenes-compra/validadas`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1776,7 +1812,10 @@
             
             try {
                 // RUTA CORREGIDA: Usa el ID en la URL, no envía body
-                const response = await fetch(`http://localhost:3000/api/ordenes-compra/${id}/registrar-entrada`, {
+                // ==========================================
+                // CAMBIO 14: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/ordenes-compra/${id}/registrar-entrada`, {
                     method: 'POST', 
                     headers: { 
                         'Authorization': `Bearer ${token}` 
@@ -1800,7 +1839,10 @@
             verifyDispatchTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Cargando despachos pendientes...</td></tr>';
             try {
                 // 1. Llamar al API para obtener los despachos pendientes de verificación
-                const response = await fetch('http://localhost:3000/api/despachos/pendientes-verificacion', {
+                // ==========================================
+                // CAMBIO 15: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/despachos/pendientes-verificacion`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1858,7 +1900,10 @@
 
             try {
                 // 2. Llamar al API para verificar (usamos PUT basado en tu controller)
-                const response = await fetch(`http://localhost:3000/api/despachos/${id}/verificar`, {
+                // ==========================================
+                // CAMBIO 16: Usar API_URL
+                // ==========================================
+                const response = await fetch(`${API_URL}/despachos/${id}/verificar`, {
                     method: 'PUT', // Usamos PUT como define tu despachoController.js
                     headers: { 
                         'Authorization': `Bearer ${token}`
@@ -1881,8 +1926,25 @@
             mermaInsumoSelect.innerHTML = '<option value="">Cargando insumos...</option>';
             try {
                 // ... (código sin cambios) ...
+                // ¡OJO! Si tienes un fetch() aquí, ¡cámbialo a API_URL!
+                // ASUMO QUE FALTA ESTE FETCH:
+                const response = await fetch(`${API_URL}/insumos`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Error al cargar insumos');
+                const insumos = await response.json();
+                mermaInsumoSelect.innerHTML = '<option value="">-- Seleccione un insumo --</option>';
+                insumos.forEach(insumo => {
+                    const option = document.createElement('option');
+                    option.value = insumo.id;
+                    option.textContent = `${insumo.nombre} (Stock: ${parseFloat(insumo.stock_actual)})`;
+                    mermaInsumoSelect.appendChild(option);
+                });
+
             } catch (error) {
-                // ... (código sin cambios) ...
+                console.error('Error:', error);
+                mermaInsumoSelect.innerHTML = '<option value="">Error al cargar insumos</option>';
             }
         }
 
@@ -1897,7 +1959,15 @@
                     return;
                 }
                 try {
-                    // ... (código del fetch) ...
+                    // ¡OJO! Asumo que aquí tenías un fetch. ¡Lo he añadido!
+                    // ==========================================
+                    // CAMBIO 17: Usar API_URL (Fetch añadido)
+                    // ==========================================
+                    const response = await fetch(`${API_URL}/insumos/merma`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ id_insumo, cantidad, motivo })
+                    });
                     const data = await response.json();
                     if (!response.ok) throw new Error(data.message || 'Error al registrar');
                     showCustomAlert('¡Merma registrada y stock actualizado!', 'success');
@@ -1915,9 +1985,39 @@
         async function cargarGestionarInsumos() {
             gestionarInsumosTable.innerHTML = '<tr><td colspan="5" class="no-records">Cargando catálogo...</td></tr>';
             try {
-                // ... (código sin cambios) ...
+                // ¡OJO! Asumo que aquí tenías un fetch. ¡Lo he añadido!
+                // ==========================================
+                // CAMBIO 18: Usar API_URL (Fetch añadido)
+                // ==========================================
+                const response = await fetch(`${API_URL}/insumos`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Error al cargar catálogo');
+                const insumos = await response.json();
+                gestionarInsumosTable.innerHTML = '';
+                if (insumos.length === 0) {
+                    gestionarInsumosTable.innerHTML = '<tr><td colspan="5" class="no-records">No hay insumos creados.</td></tr>';
+                    return;
+                }
+                insumos.forEach(insumo => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${insumo.id}</td>
+                        <td>${insumo.nombre}</td>
+                        <td>${insumo.categoria}</td>
+                        <td>${parseFloat(insumo.stock_actual)} ${insumo.unidad_medida}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm delete-insumo-btn" data-id="${insumo.id}" title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    `;
+                    gestionarInsumosTable.appendChild(row);
+                });
             } catch (error) {
-                // ... (código sin cambios) ...
+                console.error('Error:', error);
+                gestionarInsumosTable.innerHTML = `<tr><td colspan="5" class="no-records">Error al cargar: ${error.message}</td></tr>`;
             }
         }
 
@@ -1934,7 +2034,15 @@
                     descripcion: document.getElementById('insumo-desc').value
                 };
                 try {
-                    // ... (código del fetch) ...
+                    // ¡OJO! Asumo que aquí tenías un fetch. ¡Lo he añadido!
+                    // ==========================================
+                    // CAMBIO 19: Usar API_URL (Fetch añadido)
+                    // ==========================================
+                    const response = await fetch(`${API_URL}/insumos`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify(nuevoInsumo)
+                    });
                     const data = await response.json();
                     if (!response.ok) throw new Error(data.message || 'Error al crear');
                     showCustomAlert('¡Insumo creado exitosamente!', 'success');
@@ -1960,7 +2068,14 @@
             // --- FIN REEMPLAZO ---
             
             try {
-                // ... (código del fetch) ...
+                // ¡OJO! Asumo que aquí tenías un fetch. ¡Lo he añadido!
+                // ==========================================
+                // CAMBIO 20: Usar API_URL (Fetch añadido)
+                // ==========================================
+                const response = await fetch(`${API_URL}/insumos/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || 'Error al eliminar');
                 showCustomAlert('¡Insumo eliminado!', 'success');
