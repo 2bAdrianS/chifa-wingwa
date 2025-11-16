@@ -4,7 +4,7 @@ const sequelize = require('../config/database');
 
 const OrdenCompra = sequelize.define('OrdenCompra', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    fecha: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }, // De tu script SQL
+    fecha: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     id_encargado_almacen: { type: DataTypes.INTEGER, allowNull: false },
     id_encargado_compras: { type: DataTypes.INTEGER },
     estado: {
@@ -26,8 +26,4 @@ const OrdenCompra = sequelize.define('OrdenCompra', {
     timestamps: true
 });
 
-// NO MÁS RELACIONES AQUÍ
-
 module.exports = OrdenCompra;
-
-

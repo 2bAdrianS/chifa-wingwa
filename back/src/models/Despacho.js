@@ -6,10 +6,13 @@ const Despacho = sequelize.define('Despacho', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     id_solicitud: { type: DataTypes.INTEGER, allowNull: false },
     id_encargado_almacen: { type: DataTypes.INTEGER, allowNull: false },
-    fecha: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }, // De tu script SQL
+    fecha: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     estado: {
-        type: DataTypes.ENUM('Realizado', 'Verificado'),
-        defaultValue: 'Realizado'
+        type: DataTypes.ENUM(
+            'Pendiente',  // <-- CORRECCIÓN: Era 'Realizado'
+            'Verificado'
+        ),
+        defaultValue: 'Pendiente' // <-- CORRECCIÓN: Era 'Realizado'
     },
     createdAt: {
         type: DataTypes.DATE,
@@ -25,7 +28,5 @@ const Despacho = sequelize.define('Despacho', {
     tableName: 'Despachos',
     timestamps: true
 });
-
-// NO MÁS RELACIONES AQUÍ
 
 module.exports = Despacho;

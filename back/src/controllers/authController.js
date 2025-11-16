@@ -1,4 +1,3 @@
-// src/controllers/authController.js
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
@@ -7,46 +6,58 @@ exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validar que el usuario exista
-        const usuario = await Usuario.findOne({ where: { email } });
+        if (!email || !password) {
+             return res.status(400).json({ message: 'Email y contraseña son requeridos' });
+        }
+
+        // 1. Limpiamos el email
+        const usuario = await Usuario.findOne({ where: { email: email.trim() } });
         if (!usuario) {
             return res.status(401).json({ message: 'Credenciales inválidas' });
         }
 
-        // Validar la contraseña
-        const esValida = await bcrypt.compare(password, usuario.password);
+        // 2. ¡LIMPIAMOS LA CONTRASEÑA ANTES DE COMPARAR!
+        const esValida = await bcrypt.compare(password.trim(), usuario.password);
         if (!esValida) {
             return res.status(401).json({ message: 'Credenciales inválidas' });
         }
 
         // Generar el token
         const token = jwt.sign(
-            { id: usuario.id, rol: usuario.rol, nombre: usuario.nombre },
+            { id: usuario.id, rol: usuario.rol.toLowerCase(), nombre: usuario.nombre },
             process.env.JWT_SECRET,
             { expiresIn: '8h' }
         );
 
-        res.json({ token, usuario: { id: usuario.id, nombre: usuario.nombre, rol: usuario.rol } });
+        // Devolvemos el rol en minúsculas
+        res.json({ 
+            token, 
+            usuario: { 
+                id: usuario.id, 
+                nombre: usuario.nombre, 
+                rol: usuario.rol.toLowerCase() 
+            } 
+        });
+
     } catch (error) {
         res.status(500).json({ message: 'Error en el servidor', error: error.message });
     }
 };
 
-// NOTA: El registro de usuarios debería ser una función administrativa,
-// no abierta al público. Por simplicidad, se incluye aquí.
 exports.register = async (req, res) => {
     try {
         const { nombre, email, password, rol } = req.body;
         
-        // Hashear la contraseña
+        // Hashear la contraseña (limpiándola)
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const hashedPassword = await bcrypt.hash(password.trim(), salt);
 
         const nuevoUsuario = await Usuario.create({
             nombre,
-            email,
+            // Limpiamos email y rol al crear
+            email: email.trim().toLowerCase(),
             password: hashedPassword,
-            rol
+            rol: rol.toLowerCase() 
         });
 
         res.status(201).json({ message: 'Usuario creado exitosamente', usuario: { id: nuevoUsuario.id, nombre: nuevoUsuario.nombre, rol: nuevoUsuario.rol } });
@@ -54,4 +65,3 @@ exports.register = async (req, res) => {
         res.status(500).json({ message: 'Error al crear el usuario', error: error.message });
     }
 };
-

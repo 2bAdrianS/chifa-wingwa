@@ -50,15 +50,15 @@ router.get(
 );
 
 /**
- * @route   PUT /api/solicitudes/:id/aprobar
- * @desc    Aprobar una solicitud
+ * @route   PATCH /api/solicitudes/:id
+ * @desc    Actualizar el estado de una solicitud (Aprobar/Rechazar)
  * @access  Privado (Jefe de Almacen)
  */
-router.put(
-    '/:id/aprobar',
+router.patch(
+    '/:id',
     authMiddleware,
     roleCheck(['Jefe de Almacen']),
-    solicitudController.aprobarSolicitud
+    solicitudController.actualizarEstadoSolicitud // <-- Usaremos esta nueva función
 );
 
 module.exports = router;

@@ -1,5 +1,5 @@
 // src/models/Usuario.js
-const { DataTypes, Sequelize } = require('sequelize'); // <-- CORREGIDO (Añadido Sequelize)
+const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../config/database');
 
 const Usuario = sequelize.define('Usuario', {
@@ -17,18 +17,18 @@ const Usuario = sequelize.define('Usuario', {
         ),
         allowNull: false
     },
-    // Añadimos las columnas de auditoría que Sequelize espera
     createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW // <-- Ahora 'Sequelize' está definido
+        defaultValue: Sequelize.NOW
     },
     updatedAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW // <-- Ahora 'Sequelize' está definido
+        defaultValue: Sequelize.NOW
     }
 }, {
+    tableName: 'Usuarios', // Asegúrate de que tu tabla se llame así
     timestamps: true
 });
 

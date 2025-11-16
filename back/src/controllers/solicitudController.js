@@ -99,24 +99,47 @@ exports.consultarSolicitudes = async (req, res) => {
 };
 
 /**
- * @desc    Aprobar una solicitud
- * @route   PUT /api/solicitudes/:id/aprobar
+ * @desc    Actualizar el estado de una solicitud (Aprobar/Rechazar)
+ * @route   PATCH /api/solicitudes/:id
  */
-exports.aprobarSolicitud = async (req, res) => {
+exports.actualizarEstadoSolicitud = async (req, res) => {
     const { id } = req.params;
+    const { estado } = req.body; // El frontend envía {"estado": "Aprobada" o "Rechazada"}
+
+    // 1. Validar que el estado sea uno permitido
+    if (!['Aprobada', 'Rechazada'].includes(estado)) {
+        return res.status(400).json({ message: 'Estado no válido' });
+    }
+
     try {
+        // 2. Buscar la solicitud
         const solicitud = await Solicitud.findByPk(id);
         if (!solicitud) {
-            return res.status(404).json({ message: "Solicitud no encontrada." });
+            return res.status(404).json({ message: 'Solicitud no encontrada' });
         }
+
+        // 3. Verificar que esté pendiente
         if (solicitud.estado !== 'Pendiente') {
-            return res.status(400).json({ message: `No se puede aprobar una solicitud que ya está en estado '${solicitud.estado}'.` });
+            return res.status(400).json({
+                message: `La solicitud ya fue ${solicitud.estado.toLowerCase()}`
+            });
         }
-        solicitud.estado = 'Aprobada';
+
+        // 4. Actualizar y guardar
+        solicitud.estado = estado;
+        // Opcional: guardar quién aprobó/rechazó
+        // solicitud.id_aprobador = req.user.id; 
         await solicitud.save();
-        res.json({ message: "Solicitud aprobada exitosamente", solicitud });
+
+        // 5. Devolver JSON (¡Esto arregla el error del frontend!)
+        return res.json({
+            message: `Solicitud #${id} fue ${estado.toLowerCase()} exitosamente`
+        });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error al aprobar la solicitud", error: error.message });
+        console.error('Error al actualizar estado:', error);
+        return res.status(500).json({
+            message: 'Error interno del servidor al actualizar estado'
+        });
     }
 };

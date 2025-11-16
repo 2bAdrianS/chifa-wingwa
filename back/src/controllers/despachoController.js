@@ -28,12 +28,17 @@ exports.crearDespacho = async (req, res) => {
             const insumoEnStock = await Insumo.findByPk(insumoPedido.id, { transaction: t });
             const cantidadPedida = parseFloat(insumoPedido.Solicitud_Detalle.cantidad_solicitada);
             const stockActual = parseFloat(insumoEnStock.stock_actual);
+            
             if (stockActual < cantidadPedida) {
                 await t.rollback();
+                
+                // --- INICIO DE LA CORRECCIÓN ---
+                // Movimos el mensaje detallado a la propiedad 'message'
+                // para que el frontend (alert) pueda leerlo.
                 return res.status(400).json({
-                    message: "Error de stock",
-                    error: `No hay stock suficiente para '${insumoEnStock.nombre}'. Stock actual: ${stockActual}, Solicitado: ${cantidadPedida}`
+                    message: `Stock insuficiente para: '${insumoEnStock.nombre}'. Se requieren ${cantidadPedida} y solo hay ${stockActual}.`
                 });
+                // --- FIN DE LA CORRECCIÓN ---
             }
         }
         const nuevoDespacho = await Despacho.create({

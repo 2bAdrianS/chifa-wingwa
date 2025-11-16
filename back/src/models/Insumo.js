@@ -5,11 +5,11 @@ const sequelize = require('../config/database');
 const Insumo = sequelize.define('Insumo', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     nombre: { type: DataTypes.STRING(150), allowNull: false, unique: true },
-    descripcion: { type: DataTypes.TEXT }, // De tu script SQL
+    descripcion: { type: DataTypes.TEXT },
     stock_actual: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 0.00 },
     stock_minimo: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 5.00 },
-    unidad_medida: { type: DataTypes.STRING(20), allowNull: false }, // De tu script SQL
-    categoria: { type: DataTypes.STRING(100) }, // De tu comando ALTER
+    unidad_medida: { type: DataTypes.STRING(20), allowNull: false },
+    categoria: { type: DataTypes.STRING(100) },
     createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -24,7 +24,5 @@ const Insumo = sequelize.define('Insumo', {
     tableName: 'Insumos',
     timestamps: true
 });
-
-// NO MÁS RELACIONES AQUÍ
 
 module.exports = Insumo;
