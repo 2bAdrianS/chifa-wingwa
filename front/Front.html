@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wing Ya Chifa - Sistema de Gestión</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Menú lateral */
+        .sidebar {
+            width: 250px;
+            background-color: #1a1a1a;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column; /* Para que el footer se quede abajo */
+            overflow-y: auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background-color: #ff3333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff3333;
+        }
+
+        .menu-list {
+            flex-grow: 1; /* Ocupa el espacio disponible */
+        }
+        
+        /* Ocultar menú por rol por defecto */
+        .menu-item.role-chef,
+        .menu-item.role-almacen,
+        .menu-item.role-compras,
+        .menu-item.role-dueño {
+            display: none;
+        }
+
+        .menu-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            color: #ddd;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background-color: #333;
+            color: white;
+            border-left: 3px solid #ff3333;
+        }
+
+        .menu-item i {
+            margin-right: 15px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-item.active {
+            background-color: #333;
+            color: white;
+            border-left: 3px solid #ff3333;
+        }
+        
+        /* Footer del menú lateral */
+        .sidebar-footer {
+            border-top: 1px solid #333;
+            padding-top: 10px;
+        }
+
+        .sidebar-footer .menu-item {
+            font-size: 14px;
+            padding: 12px 25px;
+        }
+
+        .sidebar-footer .menu-item.logout {
+            color: #ff6b6b;
+        }
+        .sidebar-footer .menu-item.logout:hover {
+            color: #ff3333;
+        }
+
+        /* Contenedor principal */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f8f8;
+            overflow-y: auto;
+        }
+
+        .header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+        }
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            color: #555;
+        }
+        .header .user-info i {
+            margin-right: 10px;
+        }
+
+        /* Vistas (páginas) */
+        .view {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.4s;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+        }
+
+        /* Estilos para la vista de bienvenida */
+        .welcome-container { text-align: center; }
+        .welcome-title { color: #ff3333; font-size: 60px; font-weight: bold; margin-bottom: 40px; }
+        .brand-logo-large {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 40px;
+            background-color: #ff3333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+        }
+        .contact-info { text-align: left; margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
+        .contact-item { display: flex; align-items: center; margin-bottom: 15px; color: #333; }
+        .contact-item i { color: #ff3333; margin-right: 15px; font-size: 18px; width: 20px; text-align: center; }
+        .contact-label { font-weight: bold; margin-right: 10px; color: #555; }
+
+        /* Estilos para formularios */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        .form-grid-dynamic {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; transition: border-color 0.3s; }
+        .form-control:focus { outline: none; border-color: #ff3333; box-shadow: 0 0 0 2px rgba(255, 51, 51, 0.2); }
+        .btn { padding: 12px 25px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s, transform 0.1s; }
+        .btn-primary { background-color: #ffc107; color: #333; }
+        .btn-primary:hover { background-color: #e0a800; transform: translateY(-2px); }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-danger:hover { background-color: #c82333; transform: translateY(-2px); }
+        .btn-sm { padding: 8px 12px; font-size: 14px; }
+
+        /* Estilos para tablas */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        .data-table th { background-color: #f2f2f2; font-weight: 600; color: #555; }
+        .data-table tbody tr:hover { background-color: #f9f9f9; }
+        .table-actions { margin-top: 20px; display: flex; gap: 10px; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #5a6268; }
+        .no-records { text-align: center; padding: 40px; color: #999; font-style: italic; }
+        
+        /* Estilos para la vista de Ayuda (FAQ) */
+        .faq-item { margin-bottom: 15px; border: 1px solid #eee; border-radius: 5px; }
+        .faq-item summary { padding: 15px; font-weight: 600; cursor: pointer; background-color: #f9f9f9; color: #333; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after { content: '+'; font-size: 20px; color: #ff3333; }
+        .faq-item[open] summary::after { content: '-'; }
+        .faq-item p { padding: 15px; color: #555; line-height: 1.6; }
+        
+        /* Estilos para la vista de Configuración */
+        .settings-group { border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
+        .settings-group:last-child { border-bottom: none; }
+        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #ff3333; }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo-container">
+            <div class="logo">WY</div>
+            <div class="logo-text">Wing Ya Chifa</div>
+        </div>
+        
+        <div class="menu-list">
+            <a class="menu-item active" data-view="view-welcome">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
+            </a>
+            
+            <a class="menu-item role-chef" data-view="view-request">
+                <i class="fas fa-file-alt"></i>
+                <span>Registrar Solicitud</span>
+            </a>
+            
+            <a class="menu-item role-chef" data-view="view-verify-dispatch">
+                <i class="fas fa-box-check"></i>
+                <span>Verificar Despacho</span>
+            </a>
+            
+            <a class="menu-item role-almacen" data-view="view-approve-request">
+                <i class="fas fa-tasks"></i>
+                <span>Aprobar Solicitudes</span>
+            </a>
+            
+            <a class="menu-item role-almacen" data-view="view-dispatch">
+                <i class="fas fa-truck"></i>
+                <span>Registrar Despacho</span>
+            </a>
+            
+            <a class="menu-item role-almacen" data-view="view-purchase-order">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Orden de Compra</span>
+            </a>
+            
+            <a class="menu-item role-almacen" data-view="view-entry">
+                <i class="fas fa-dolly-flatbed"></i>
+                <span>Registrar Entrada</span>
+            </a>
+            
+            <a class="menu-item role-compras" data-view="view-validate-order">
+                <i class="fas fa-check-double"></i>
+                <span>Validar Órdenes</span>
+            </a>
+            
+            <a class="menu-item role-almacen" data-view="view-gestionar-insumos">
+                <i class="fas fa-book"></i>
+                <span>Gestionar Insumos</span>
+            </a>
+            
+            <a class="menu-item role-almacen" data-view="view-stock">
+                <i class="fas fa-boxes"></i>
+                <span>Actualizar Stock</span>
+            </a>
+            
+            <a class="menu-item role-almacen" data-view="view-merma">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Registrar Merma</span>
+            </a>
+            
+            <a class="menu-item role-almacen role-dueño" data-view="view-history">
+                <i class="fas fa-history"></i>
+                <span>Historial</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <a class="menu-item" data-view="view-settings">
+                <i class="fas fa-cog"></i>
+                <span>Configuración</span>
+            </a>
+            <a class="menu-item" data-view="view-help">
+                <i class="fas fa-question-circle"></i>
+                <span>Ayuda</span>
+            </a>
+            <a class="menu-item logout" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Cerrar Sesión</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <header class="header">
+            <h1 id="page-title">Panel de Control</h1>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span>Administrador</span>
+            </div>
+        </header>
+
+        <section id="view-welcome" class="view active">
+            <div class="content-card welcome-container">
+                <div class="brand-logo-large">WY</div>
+                <h1 class="welcome-title">BIENVENIDO</h1>
+                <p style="color: #666; font-size: 18px;">Sistema de Gestión de Insumos - Wing Ya Chifa</p>
+                <div class="contact-info">
+                    <div class="contact-item"><i class="fas fa-map-marker-alt"></i><span class="contact-label">Dirección:</span><span>Av. América Sur 4172 Urb. San Andrés III etapa, Trujillo, Peru</span></div>
+                    <div class="contact-item"><i class="fas fa-phone"></i><span class="contact-label">Teléfono:</span><span>(044) 222434</span></div>
+                    <div class="contact-item"><i class="fas fa-mobile-alt"></i><span class="contact-label">Celular:</span><span>+51 958 887 089</span></div>
+                    <div class="contact-item"><i class="fas fa-envelope"></i><span class="contact-label">Correo:</span><span>wingyafc@gmail.com</span></div>
+                </div>
+            </div>
+        </section>
+
+<section id="view-request" class="view">
+    <div class="content-card">
+        <h2 style="color: #ff3333; margin-bottom: 25px;">Registrar Solicitud de Insumos</h2>
+        
+        <form id="form-solicitud">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="requester-name">Nombre del Solicitante</label>
+                    <input type="text" id="requester-name" class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="requester-position">Cargo</label>
+                    <input type="text" id="requester-position" class="form-control" readonly>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+            <div>
+                <label style="font-weight: 600; color: #333; margin-bottom: 15px; display: block;">Añadir Insumos al Pedido</label>
+                <div class="form-grid-dynamic">
+                    <div class="form-group">
+                        <label for="request-insumo-select">Insumo</label>
+                        <select id="request-insumo-select" class="form-control">
+                            <option value="">Cargando insumos...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="request-insumo-qty">Cantidad</label>
+                        <input type="number" id="request-insumo-qty" class="form-control" min="1" step="1" placeholder="Ej: 5">
+                    </div>
+                    <div class="form-group">
+                        <button type="button" id="btn-add-insumo" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-plus"></i> Añadir
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">Insumos Solicitados:</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Insumo</th>
+                        <th>Cantidad</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="request-items-table">
+                    <tr><td colspan="3" class="no-records">Añada insumos a la solicitud</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="form-group full-width" style="margin-top: 20px;">
+                <label for="request-comments">Comentarios adicionales</label>
+                <textarea id="request-comments" class="form-control" rows="3" placeholder="Añade cualquier comentario extra..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-success" style="margin-top: 20px;">
+                <i class="fas fa-save"></i> Registrar Solicitud Completa
+            </button>
+        </form>
+    </div>
+</section>
+        
+        <section id="view-verify-dispatch" class="view">
+            <div class="content-card">
+                <h2 style="color: #ff3333; margin-bottom: 25px;">Despachos Pendientes de Verificación</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID Despacho</th>
+                            <th>Fecha</th>
+                            <th>Despachado por (Almacén)</th>
+                            <th>Insumos Recibidos</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verify-dispatch-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section id="view-approve-request" class="view">
+            <div class="content-card">
+                 <h2 style="color: #ff3333; margin-bottom: 25px;">Solicitudes Pendientes de Aprobación</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID Solicitud</th>
+                            <th>Fecha</th>
+                            <th>Solicitado por (Chef)</th>
+                            <th>Insumos</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="approve-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="view-dispatch" class="view">
+            <div class="content-card">
+                 <h2 style="color: #ff3333; margin-bottom: 25px;">Registrar Despacho de Insumos</h2>
+                <form id="form-despacho">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="dispatch-requester">Nombre de Encargado</label>
+                            <input type="text" id="dispatch-requester" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="dispatch-code">Codigo de solicitud (Aprobada)</label>
+                            <input type="text" id="dispatch-code" class="form-control" placeholder="Ej: 17">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Insumos a despachar:</label>
+                            <p>(El sistema despachará automáticamente todos los insumos de la solicitud aprobada)</p>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
+                        <i class="fas fa-truck"></i> Registrar Despacho
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section id="view-purchase-order" class="view">
+            <div class="content-card">
+                 <h2 style="color: #ff3333; margin-bottom: 25px;">Generar Orden de Compra</h2>
+                <form id="form-orden-compra">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="manager-name">Nombre del Encargado</label>
+                            <input type="text" id="manager-name" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="request-code">Código (Opcional)</label>
+                            <input type="text" id="request-code" class="form-control" placeholder="Ej: COMP-2025-001">
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">Insumos con Stock Bajo (Automático):</h3>
+                    <table class="data-table">
+                        <thead> 
+                            <tr> 
+                                <th>Producto</th> 
+                                <th>Stock Actual</th> 
+                                <th>Stock Mínimo</th>
+                                <th>Cantidad a Comprar (Recomendado)</th> 
+                            </tr> 
+                        </thead>
+                        <tbody id="po-table-body">
+                            </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
+                        <i class="fas fa-check-circle"></i> Generar Orden
+                    </button>
+                </form>
+            </div>
+        </section>
+        
+        <section id="view-entry" class="view">
+            <div class="content-card">
+                 <h2 style="color: #ff3333; margin-bottom: 25px;">Órdenes Validadas (Listas para Recibir)</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID Orden</th>
+                            <th>Validada por (Compras)</th>
+                            <th>Insumos</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="entry-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="view-validate-order" class="view">
+            <div class="content-card">
+                 <h2 style="color: #ff3333; margin-bottom: 25px;">Órdenes Pendientes de Validación</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID Orden</th>
+                            <th>Fecha</th>
+                            <th>Solicitado por (Almacén)</th>
+                            <th>Insumos</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="validate-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section id="view-gestionar-insumos" class="view">
+            <div class="content-card">
+                <h2 style="color: #ff3333; margin-bottom: 25px;">Gestionar Catálogo de Insumos</h2>
+                
+                <form id="form-crear-insumo">
+                    <h3 style="margin-bottom: 15px;">Crear Nuevo Insumo</h3>
+                    <div class="form-grid">
+                         <div class="form-group">
+                            <label for="insumo-nombre">Nombre</label>
+                            <input type="text" id="insumo-nombre" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="insumo-categoria">Categoría</label>
+                            <input type="text" id="insumo-categoria" class="form-control" placeholder="Ej: Carnes, Vegetales, Secos" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="insumo-stock-actual">Stock Actual</label>
+                            <input type="number" id="insumo-stock-actual" class="form-control" step="0.01" min="0" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="insumo-stock-minimo">Stock Mínimo</label>
+                            <input type="number" id="insumo-stock-minimo" class="form-control" step="0.01" min="0" value="5" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="insumo-unidad">Unidad de Medida</label>
+                            <input type="text" id="insumo-unidad" class="form-control" placeholder="Ej: kg, litro, paquete" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="insumo-desc">Descripción (Opcional)</label>
+                            <input type="text" id="insumo-desc" class="form-control">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success" style="margin-top: 10px;">
+                        <i class="fas fa-plus"></i> Crear Insumo
+                    </button>
+                </form>
+
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+
+                <h3 style="margin-bottom: 15px;">Catálogo Actual</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Stock</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gestionar-insumos-table">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="view-stock" class="view">
+            <div class="content-card">
+                 <h2 style="color: #ff3333; margin-bottom: 25px;">Actualizar Stock de Insumos</h2>
+                <form id="form-stock">
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">Tabla de Ingredientes:</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ingrediente</th>
+                                <th>Categoria</th>
+                                <th>Cantidad actual</th>
+                                <th>Nueva cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-table-body">
+                            </tbody>
+                    </table>
+                    <button type="submit" id="btn-actualizar-stock" class="btn btn-primary" style="margin-top: 20px;">
+                        <i class="fas fa-sync-alt"></i> Actualizar Stock
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section id="view-merma" class="view">
+            <div class="content-card">
+                <h2 style="color: #ff3333; margin-bottom: 25px;">Registrar Merma de Insumos</h2>
+                <form id="form-merma">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="merma-insumo-select">Seleccione el Insumo</label>
+                            <select id="merma-insumo-select" class="form-control" required>
+                                <option value="">Cargando insumos...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="merma-cantidad">Cantidad perdida</label>
+                            <input type="number" id="merma-cantidad" class="form-control" step="0.01" min="0.01" placeholder="Ej: 1.5" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="merma-motivo">Motivo de la Merma (Obligatorio)</label>
+                            <textarea id="merma-motivo" class="form-control" rows="3" placeholder="Ej: Saco roto, producto malogrado, etc." required></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-danger" style="margin-top: 20px;">
+                        <i class="fas fa-trash-alt"></i> Registrar Merma
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section id="view-history" class="view">
+            <div class="content-card">
+                 <h2 style="color: #ff3333; margin-bottom: 25px;">Historial de movimientos</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Tipo de movimiento</th>
+                            <th>Observación</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="view-settings" class="view">
+            <div class="content-card">
+                 <h2 style="color: #ff3333; margin-bottom: 25px;">Configuración del Sistema</h2>
+                 <div class="settings-group">
+                    <h3 style="margin-bottom: 20px;">Perfil de Usuario</h3>
+                    <div class="form-group">
+                        <label for="user-name">Nombre de Usuario</label>
+                        <input type="text" id="user-name" class="form-control" value="Administrador">
+                    </div>
+                    <div class="form-group">
+                        <label for="user-email">Correo Electrónico</label>
+                        <input type="email" id="user-email" class="form-control" value="admin@wingyachifa.com">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-help" class="view">
+            <div class="content-card">
+                 <h2 style="color: #ff3333; margin-bottom: 25px;">Centro de Ayuda</h2>
+                <h3 style="margin-bottom: 20px;">Preguntas Frecuentes (FAQ)</h3>
+                </div>
+        </section>
+
+    </main>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- SECCIÓN 1: SEGURIDAD Y AUTENTICACIÓN ---
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            if (!token || !user) {
+                alert('Acceso denegado. Por favor, inicie sesión.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // --- SECCIÓN 2: PERSONALIZACIÓN Y ROLES ---
+            const userInfoHeader = document.querySelector('.header .user-info span');
+            if (userInfoHeader) {
+                userInfoHeader.textContent = `${user.nombre} (${user.rol})`;
+            }
+
+            function setupRoleVisibility(rol) {
+                document.querySelectorAll('.role-chef, .role-almacen, .role-compras, .role-dueño').forEach(el => {
+                    el.style.display = 'none';
+                });
+
+                if (rol === 'Chef de Cocina') {
+                    document.querySelectorAll('.role-chef').forEach(el => el.style.display = 'flex');
+                }
+                if (rol === 'Jefe de Almacen') {
+                    document.querySelectorAll('.role-almacen, .role-dueño').forEach(el => el.style.display = 'flex');
+                }
+                if (rol === 'Encargado de Almacen') {
+                    document.querySelectorAll('.role-almacen').forEach(el => el.style.display = 'flex');
+                }
+                if (rol === 'Encargado de Compras') {
+                    document.querySelectorAll('.role-compras').forEach(el => el.style.display = 'flex');
+                }
+                if (rol === 'Dueño') {
+                    document.querySelectorAll('.role-dueño').forEach(el => el.style.display = 'flex');
+                }
+            }
+            
+            setupRoleVisibility(user.rol);
+
+            // --- SECCIÓN 3: REFERENCIAS A ELEMENTOS ---
+            const menuItems = document.querySelectorAll('.menu-item[data-view]');
+            const views = document.querySelectorAll('.view');
+            const pageTitle = document.getElementById('page-title');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            // Formularios
+            const formSolicitud = document.getElementById('form-solicitud');
+            const formDespacho = document.getElementById('form-despacho');
+            const formStock = document.getElementById('form-stock');
+            const formOrdenCompra = document.getElementById('form-orden-compra');
+            const formMerma = document.getElementById('form-merma');
+            const formCrearInsumo = document.getElementById('form-crear-insumo');
+
+            // Cuerpos de Tablas
+            const historyTableBody = document.getElementById('history-table-body');
+            const stockTableBody = document.getElementById('stock-table-body');
+            const validateTableBody = document.getElementById('validate-table-body');
+            const entryTableBody = document.getElementById('entry-table-body');
+            const approveTableBody = document.getElementById('approve-table-body');
+            const verifyDispatchTableBody = document.getElementById('verify-dispatch-table-body');
+            const poTableBody = document.getElementById('po-table-body');
+            const gestionarInsumosTable = document.getElementById('gestionar-insumos-table');
+            
+            // Controles de Solicitud Dinámica
+            const requestInsumoSelect = document.getElementById('request-insumo-select');
+            const requestInsumoQty = document.getElementById('request-insumo-qty');
+            const btnAddInsumo = document.getElementById('btn-add-insumo');
+            const requestItemsTable = document.getElementById('request-items-table');
+            
+            const mermaInsumoSelect = document.getElementById('merma-insumo-select');
+
+            let insumosParaSolicitud = []; // Variable global para la lista de solicitud
+
+            const titles = {
+                'view-welcome': 'Panel de Control',
+                'view-request': 'Registrar Solicitud',
+                'view-verify-dispatch': 'Verificar Despacho',
+                'view-approve-request': 'Aprobar Solicitudes',
+                'view-dispatch': 'Registrar Despacho',
+                'view-purchase-order': 'Orden de Compra',
+                'view-entry': 'Registrar Entrada',
+                'view-validate-order': 'Validar Órdenes',
+                'view-gestionar-insumos': 'Gestionar Insumos',
+                'view-stock': 'Actualizar Stock',
+                'view-merma': 'Registrar Merma',
+                'view-history': 'Historial',
+                'view-settings': 'Configuración',
+                'view-help': 'Ayuda'
+            };
+
+            // --- SECCIÓN 4: NAVEGACIÓN ENTRE VISTAS ---
+            function showView(viewId) {
+                views.forEach(view => view.classList.remove('active'));
+                const activeView = document.getElementById(viewId);
+                if (activeView) activeView.classList.add('active');
+                pageTitle.textContent = titles[viewId] || 'Panel de Control';
+            }
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    const viewId = this.getAttribute('data-view');
+                    if (viewId) {
+                        showView(viewId);
+                        
+                        // Cargar datos de API al cambiar de vista
+                        if (viewId === 'view-history') cargarHistorial();
+                        if (viewId === 'view-stock') cargarStock();
+                        if (viewId === 'view-validate-order') cargarOrdenesPendientes();
+                        if (viewId === 'view-entry') cargarOrdenesValidadas();
+                        if (viewId === 'view-approve-request') cargarSolicitudesPendientes();
+                        if (viewId === 'view-verify-dispatch') cargarDespachosPendientes();
+                        if (viewId === 'view-merma') cargarInsumosParaMerma();
+                        if (viewId === 'view-purchase-order') {
+                            document.getElementById('manager-name').value = user.nombre;
+                            cargarOrdenesStockBajo();
+                        }
+                        if (viewId === 'view-request') {
+                            document.getElementById('requester-name').value = user.nombre;
+                            document.getElementById('requester-position').value = user.rol;
+                            cargarInsumosParaSolicitud(); 
+                            limpiarTablaSolicitud();
+                        }
+                        if (viewId === 'view-gestionar-insumos') {
+                            cargarGestionarInsumos();
+                        }
+                        
+                        // Rellenar formularios con datos del usuario
+                        if (viewId === 'view-dispatch') {
+                            document.getElementById('dispatch-requester').value = user.nombre;
+                            // ¡NUEVA LÓGICA AQUÍ!
+                            cargarSolicitudesAprobadasParaDespacho();
+                        }
+                    }
+                });
+            });
+
+            // --- SECCIÓN 5: LÓGICA DE CERRAR SESIÓN ---
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                alert('Sesión cerrada correctamente.');
+                window.location.href = 'login.html';
+            });
+
+            // --- SECCIÓN 6: FUNCIÓN PARA CARGAR HISTORIAL ---
+            async function cargarHistorial() {
+                historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Cargando historial...</td></tr>';
+                try {
+                    const response = await fetch('http://localhost:3000/api/historial', {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) throw new Error('Error al cargar el historial');
+                    const historial = await response.json();
+                    historyTableBody.innerHTML = ''; 
+                    if (historial.length === 0) {
+                        historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">No hay registros para mostrar</td></tr>';
+                        return;
+                    }
+                    historial.forEach(mov => {
+                        const row = document.createElement('tr');
+                        const fecha = new Date(mov.createdAt).toLocaleString();
+                        row.innerHTML = `
+                            <td>${fecha}</td>
+                            <td>${mov.insumo.nombre}</td>
+                            <td>${mov.cantidad}</td>
+                            <td>${mov.tipo}</td> 
+                            <td>${mov.motivo || '-'}</td>
+                        `;
+                        historyTableBody.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error('Error:', error);
+                    historyTableBody.innerHTML = '<tr><td colspan="5" class="no-records">Error al cargar los datos.</td></tr>';
+                }
+            }
+
+            // --- (MODIFICADO) SECCIÓN 7: LÓGICA FORMULARIO SOLICITUD (DINÁMICO) ---
+            
+            // Cargar insumos en el <select> del formulario de solicitud
+            async function cargarInsumosParaSolicitud() {
+                requestInsumoSelect.innerHTML = '<option value="">Cargando insumos...</option>';
+                try {
+                    const response = await fetch('http://localhost:3000/api/insumos', {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) throw new Error('Error al cargar insumos');
+                    
+                    const insumos = await response.json();
+                    requestInsumoSelect.innerHTML = '<option value="">-- Seleccione un insumo --</option>';
+                    
+                    insumos.forEach(insumo => {
+                        const option = document.createElement('option');
+                        option.value = insumo.id;
+                        option.textContent = `${insumo.nombre} (Stock: ${parseFloat(insumo.stock_actual)})`;
+                        option.dataset.nombre = insumo.nombre; // Guardar el nombre
+                        requestInsumoSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error:', error);
+                    requestInsumoSelect.innerHTML = '<option value="">Error al cargar insumos</option>';
+                }
+            }
+            
+            // Limpiar la tabla de solicitud
+            function limpiarTablaSolicitud() {
+                insumosParaSolicitud = []; // Vaciar el array
+                requestItemsTable.innerHTML = '<tr><td colspan="3" class="no-records">Añada insumos a la solicitud</td></tr>';
+            }
+
+            // Añadir insumo a la tabla temporal
+            if (btnAddInsumo) {
+                btnAddInsumo.addEventListener('click', function() {
+                    const selectedOption = requestInsumoSelect.options[requestInsumoSelect.selectedIndex];
+                    const insumoId = parseInt(selectedOption.value);
+                    const insumoNombre = selectedOption.dataset.nombre;
+                    const cantidad = parseFloat(requestInsumoQty.value);
+
+                    // Validaciones
+                    if (!insumoId) { alert('Error: Debe seleccionar un insumo.'); return; }
+                    if (!cantidad || cantidad <= 0) { alert('Error: La cantidad debe ser un número mayor a 0.'); return; }
+                    // Evitar duplicados
+                    if (insumosParaSolicitud.find(item => item.id_insumo === insumoId)) {
+                        alert('Error: Ese insumo ya está en la lista.');
+                        return;
+                    }
+
+                    insumosParaSolicitud.push({ id_insumo, nombre: insumoNombre, cantidad });
+                    actualizarTablaSolicitud();
+                    requestInsumoSelect.value = "";
+                    requestInsumoQty.value = "";
+                });
+            }
+
+            // Función para redibujar la tabla de solicitud
+            function actualizarTablaSolicitud() {
+                requestItemsTable.innerHTML = '';
+                if (insumosParaSolicitud.length === 0) {
+                    requestItemsTable.innerHTML = '<tr><td colspan="3" class="no-records">Añada insumos a la solicitud</td></tr>';
+                    return;
+                }
+                insumosParaSolicitud.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.nombre}</td>
+                        <td>${item.cantidad}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm remove-item-btn" data-index="${index}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    `;
+                    requestItemsTable.appendChild(row);
+                });
+            }
+
+            // Event listener para botones de eliminar en la tabla de solicitud
+            requestItemsTable.addEventListener('click', function(e) {
+                const button = e.target.closest('.remove-item-btn');
+                if (button) {
+                    const index = parseInt(button.dataset.index);
+                    insumosParaSolicitud.splice(index, 1);
+                    actualizarTablaSolicitud();
+                }
+            });
+
+            // Event listener para el formulario principal de solicitud
+            if (formSolicitud) {
+                formSolicitud.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    if (insumosParaSolicitud.length === 0) {
+                        alert('Error: Debe añadir al menos un insumo a la solicitud.');
+                        return;
+                    }
+                    const insumosParaAPI = insumosParaSolicitud.map(item => ({
+                        id_insumo: item.id_insumo,
+                        cantidad: item.cantidad
+                    }));
+                    const comentarios = document.getElementById('request-comments').value;
+                    try {
+                        const response = await fetch('http://localhost:3000/api/solicitudes', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ insumos: insumosParaAPI, comentarios })
+                        });
+                        const data = await response.json();
+                        if (response.ok) {
+                            alert('¡Solicitud registrada exitosamente! (ID: ' + data.solicitud.id + ')');
+                            formSolicitud.reset();
+                            limpiarTablaSolicitud();
+                            showView('view-welcome');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    } catch (error) {
+                        alert('Ocurrió un error al conectar con el servidor.');
+                    }
+                });
+            }
+            
+            // --- (MODIFICADO) SECCIÓN 8: LÓGICA FORMULARIO DESPACHO ---
+            
+            // Función para cargar solicitudes aprobadas para despacho
+            async function cargarSolicitudesAprobadasParaDespacho() {
+                const despacharContainer = document.getElementById('dispatch-list-container'); // Contenedor que vamos a crear en HTML
+                
+                // Si el contenedor no existe, no hacemos nada (esto evita un error si usamos esta función en el formulario antiguo)
+                if (!despacharContainer) return; 
+
+                despacharContainer.innerHTML = '<h4>Cargando solicitudes...</h4>';
+
+                try {
+                    // Reutilizamos la ruta GET /api/solicitudes/aprobadas que creamos
+                    const response = await fetch('http://localhost:3000/api/solicitudes/aprobadas', {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) throw new Error('Error al cargar solicitudes aprobadas');
+                    
+                    const solicitudes = await response.json();
+                    
+                    if (solicitudes.length === 0) {
+                        despacharContainer.innerHTML = '<p class="no-records">No hay solicitudes aprobadas listas para despachar.</p>';
+                        return;
+                    }
+
+                    // Construir la tabla con las solicitudes aprobadas
+                    let htmlContent = '<p style="font-weight: 600; margin-bottom: 10px;">Seleccione una solicitud de la lista:</p>';
+                    htmlContent += '<table class="data-table"><thead><tr><th>ID</th><th>Solicitante</th><th>Detalle</th><th>Acción</th></tr></thead><tbody>';
+
+                    solicitudes.forEach(sol => {
+                        const insumosStr = sol.insumos.map(
+                            item => `${item.nombre} (${parseFloat(item.Solicitud_Detalle.cantidad_solicitada)})`
+                        ).join(', ');
+                        
+                        htmlContent += `
+                            <tr>
+                                <td>${sol.id}</td>
+                                <td>${sol.solicitante.nombre}</td>
+                                <td>${insumosStr}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm dispatch-btn" data-id="${sol.id}">
+                                        <i class="fas fa-truck"></i> Despachar
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    htmlContent += '</tbody></table>';
+                    despacharContainer.innerHTML = htmlContent;
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    despacharContainer.innerHTML = `<p class="no-records alert-danger">Error: ${error.message}</p>`;
+                }
+            }
+
+            // (NUEVO) Listener para el botón Despachar en la tabla
+            document.addEventListener('click', async function(e) {
+                const button = e.target.closest('.dispatch-btn');
+                if (button) {
+                    const id_solicitud = button.dataset.id;
+                    if (!confirm(`¿Está seguro de despachar la Solicitud #${id_solicitud}?`)) return;
+
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    try {
+                        const response = await fetch('http://localhost:3000/api/despachos', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ id_solicitud: parseInt(id_solicitud) })
+                        });
+                        const data = await response.json();
+
+                        if (!response.ok) throw new Error(data.message || 'Error al registrar el despacho');
+
+                        alert('¡Despacho registrado y stock actualizado exitosamente!');
+                        cargarSolicitudesAprobadasParaDespacho(); // Recargar la lista
+                        
+                    } catch (error) {
+                        alert(`Error: ${error.message}`);
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-truck"></i> Despachar';
+                    }
+                }
+            });
+
+            // (ELIMINADO) Listener para el formulario viejo
+            if (formDespacho) {
+                formDespacho.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('¡Esta sección ya no se usa! Por favor, utilice la tabla de solicitudes aprobadas.');
+                });
+            }
+
+            // --- SECCIÓN 9: LÓGICA DE ACTUALIZAR STOCK ---
+            async function cargarStock() {
+                // ... (código sin cambios) ...
+            }
+
+            if (formStock) {
+                formStock.addEventListener('submit', async function(e) {
+                    // ... (código sin cambios) ...
+                });
+            }
+
+            // --- SECCIÓN 10: LÓGICA DE ORDEN DE COMPRA (DINÁMICA) ---
+            
+            // Cargar insumos con stock bajo en la tabla de PO
+            async function cargarOrdenesStockBajo() {
+                // ... (código sin cambios) ...
+            }
+
+            // Event listener para el formulario de PO (ahora lee la tabla dinámica)
+            if (formOrdenCompra) {
+                formOrdenCompra.addEventListener('submit', async function(e) {
+                    // ... (código sin cambios) ...
+                });
+            }
+
+            // --- SECCIÓN 11: LÓGICA DE VALIDAR ÓRDENES (Compras) ---
+            async function cargarOrdenesPendientes() {
+                // ... (código sin cambios) ...
+            }
+
+            validateTableBody.addEventListener('click', async function(e) {
+                // ... (código sin cambios) ...
+            });
+
+            // --- SECCIÓN 12: LÓGICA DE APROBAR SOLICITUDES (Jefe Almacén) ---
+            async function cargarSolicitudesPendientes() {
+                // ... (código sin cambios) ...
+            }
+
+            approveTableBody.addEventListener('click', async function(e) {
+                // ... (código sin cambios) ...
+            });
+
+
+            // --- SECCIÓN 13: LÓGICA DE REGISTRAR ENTRADA (Almacén) ---
+            async function cargarOrdenesValidadas() {
+                // ... (código sin cambios) ...
+            }
+
+            entryTableBody.addEventListener('click', async function(e) {
+                // ... (código sin cambios) ...
+            });
+            
+            // --- SECCIÓN 14: LÓGICA DE VERIFICAR DESPACHO (Chef) ---
+            async function cargarDespachosPendientes() {
+                // ... (código sin cambios) ...
+            }
+
+            verifyDispatchTableBody.addEventListener('click', async function(e) {
+                // ... (código sin cambios) ...
+            });
+
+            // --- SECCIÓN 15: LÓGICA DE REGISTRAR MERMA ---
+            async function cargarInsumosParaMerma() {
+                // ... (código sin cambios) ...
+            }
+
+            if (formMerma) {
+                formMerma.addEventListener('submit', async function(e) {
+                    // ... (código sin cambios) ...
+                });
+            }
+            
+            // --- SECCIÓN 16: LÓGICA DE GESTIONAR INSUMOS ---
+            
+            // Cargar la tabla de insumos para gestionar
+            async function cargarGestionarInsumos() {
+                // ... (código sin cambios) ...
+            }
+
+            // Event listener para el formulario de CREAR insumo
+            if (formCrearInsumo) {
+                formCrearInsumo.addEventListener('submit', async function(e) {
+                    // ... (código sin cambios) ...
+                });
+            }
+            
+            // Event listener para los botones de ELIMINAR insumo
+            gestionarInsumosTable.addEventListener('click', async function(e) {
+                // ... (código sin cambios) ...
+            });
+
+
+            // --- Carga inicial ---
+            showView('view-welcome');
+            
+        });
+    </script>
+</body>
+</html>
