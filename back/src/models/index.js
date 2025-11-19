@@ -11,7 +11,7 @@ const OrdenCompra = require('./OrdenCompra');
 const Movimiento = require('./Movimiento');
 
 // --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
-// Definir tablas intermedias (CON SUS LLAVES FORÁNEAS)
+// Definir tablas intermedias con los nombres EXACTOS de la BD (minúsculas)
 
 const Solicitud_Detalle = sequelize.define('Solicitud_Detalle', {
     id_solicitud: {
@@ -28,7 +28,7 @@ const Solicitud_Detalle = sequelize.define('Solicitud_Detalle', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     }
-}, { tableName: 'Solicitud_Detalle', timestamps: true });
+}, { tableName: 'solicitud_detalle', timestamps: true }); // <-- CORREGIDO
 
 const Despacho_Detalle = sequelize.define('Despacho_Detalle', {
     id_despacho: {
@@ -45,7 +45,7 @@ const Despacho_Detalle = sequelize.define('Despacho_Detalle', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     }
-}, { tableName: 'Despacho_Detalle', timestamps: false });
+}, { tableName: 'despacho_detalle', timestamps: false }); // <-- CORREGIDO
 
 const Orden_Compra_Detalle = sequelize.define('Orden_Compra_Detalle', {
     id_orden_compra: {
@@ -62,11 +62,10 @@ const Orden_Compra_Detalle = sequelize.define('Orden_Compra_Detalle', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     }
-}, { tableName: 'Orden_Compra_Detalle', timestamps: false });
+}, { tableName: 'orden_compra_detalle', timestamps: false }); // <-- CORREGIDO
 
 
 // --- 1. ASOCIACIONES DE USUARIO ---
-// (Esto ya estaba bien)
 Usuario.hasMany(Solicitud, { foreignKey: 'id_solicitante', as: 'solicitudesRealizadas' });
 Solicitud.belongsTo(Usuario, { foreignKey: 'id_solicitante', as: 'solicitante' });
 
@@ -84,7 +83,6 @@ Movimiento.belongsTo(Usuario, { foreignKey: 'id_usuario_registro', as: 'responsa
 
 
 // --- 2. ASOCIACIONES MUCHOS-A-MUCHOS (Insumos) ---
-// (Esto ya estaba bien)
 
 // Solicitud <-> Insumo
 Solicitud.belongsToMany(Insumo, {
@@ -124,7 +122,6 @@ Insumo.belongsToMany(OrdenCompra, {
 
 
 // --- 3. OTRAS ASOCIACIONES ---
-// (Esto ya estaba bien)
 Insumo.hasMany(Movimiento, { foreignKey: 'id_insumo', as: 'movimientos' });
 Movimiento.belongsTo(Insumo, { foreignKey: 'id_insumo', as: 'insumo' });
 
