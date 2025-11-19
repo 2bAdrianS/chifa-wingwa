@@ -1,4 +1,4 @@
-// src/models/Despacho.js
+// back/src/models/Despacho.js
 const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../config/database');
 
@@ -6,13 +6,13 @@ const Despacho = sequelize.define('Despacho', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     id_solicitud: { type: DataTypes.INTEGER, allowNull: false },
     id_encargado_almacen: { type: DataTypes.INTEGER, allowNull: false },
-    fecha: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
+    fecha: {
+        type: DataTypes.DATE,
+        defaultValue: Sequelize.NOW
+    },
     estado: {
-        type: DataTypes.ENUM(
-            'Pendiente',  // <-- CORRECCIÓN: Era 'Realizado'
-            'Verificado'
-        ),
-        defaultValue: 'Pendiente' // <-- CORRECCIÓN: Era 'Realizado'
+        type: DataTypes.ENUM('Realizado', 'Verificado'),
+        defaultValue: 'Realizado'
     },
     createdAt: {
         type: DataTypes.DATE,
@@ -25,7 +25,8 @@ const Despacho = sequelize.define('Despacho', {
         defaultValue: Sequelize.NOW
     }
 }, {
-    tableName: 'Despachos',
+    // 👇 LA CORRECCIÓN CLAVE: Forzar minúsculas
+    tableName: 'despachos', 
     timestamps: true
 });
 
