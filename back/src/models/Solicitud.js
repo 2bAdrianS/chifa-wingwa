@@ -1,4 +1,3 @@
-// src/models/Solicitud.js
 const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../config/database');
 
@@ -11,7 +10,7 @@ const Solicitud = sequelize.define('Solicitud', {
             'Aprobada',
             'Rechazada',
             'Despachada',
-            'Verificada' // <-- CORRECCIÓN: Añadido este estado
+            'Verificada' 
         ),
         defaultValue: 'Pendiente'
     },
@@ -27,7 +26,8 @@ const Solicitud = sequelize.define('Solicitud', {
         defaultValue: Sequelize.NOW
     }
 }, {
-    tableName: 'Solicitudes',
+    // 👇 ¡ESTA ES LA LÍNEA CLAVE! TIENE QUE SER MINÚSCULA 👇
+    tableName: 'solicitudes', 
     timestamps: true
 });
 
