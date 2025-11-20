@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wing Ya Chifa - Sistema de Gestión</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <style>
         /* --- TU CSS (SIN CAMBIOS) --- */
         * {
@@ -771,8 +773,11 @@
 
         <section id="view-history" class="view">
             <div class="content-card">
-                 <h2 style="color: #ff3333; margin-bottom: 25px;">Historial de movimientos</h2>
-                <table class="data-table">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 style="color: #ff3333; margin: 0;">Historial de movimientos</h2>
+                    <button id="btn-exportar-pdf" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Exportar a PDF</button>
+                </div>
+                <table class="data-table" id="tabla-historial-completa">
                     <thead>
                         <tr>
                             <th>Fecha</th>
@@ -2086,6 +2091,18 @@
                 showCustomAlert(`Error: ${error.message}`, 'error');
             }
         });
+
+        // --- LÓGICA PDF ---
+        const btnExportarPDF = document.getElementById('btn-exportar-pdf');
+        if(btnExportarPDF){
+            btnExportarPDF.addEventListener('click', function(){
+                const { jsPDF } = window.jspdf; 
+                const doc = new jsPDF();
+                doc.text(`Historial Wing Wa - ${new Date().toLocaleDateString()}`, 14, 20);
+                doc.autoTable({ html: '#tabla-historial-completa', startY: 30 });
+                doc.save('historial.pdf');
+            });
+        }
 
 
         // --- Carga inicial ---
