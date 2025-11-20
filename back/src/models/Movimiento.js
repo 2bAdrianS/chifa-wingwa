@@ -1,4 +1,3 @@
-// src/models/Movimiento.js
 const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../config/database');
 
@@ -13,19 +12,10 @@ const Movimiento = sequelize.define('Movimiento', {
     id_usuario_registro: { type: DataTypes.INTEGER, allowNull: false },
     motivo: { type: DataTypes.STRING(255) },
     id_referencia: { type: DataTypes.INTEGER },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-    }
+    createdAt: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+    updatedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW }
 }, {
-    // 👇 LA CORRECCIÓN: Nombre de tabla en minúsculas
-    tableName: 'movimientos',
+    tableName: 'movimientos', // 👈 ESTO DEBE COINCIDIR CON TU FOTO (minúscula)
     timestamps: true
 });
 

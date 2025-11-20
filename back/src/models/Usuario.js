@@ -1,4 +1,3 @@
-// src/models/Usuario.js
 const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../config/database');
 
@@ -17,18 +16,10 @@ const Usuario = sequelize.define('Usuario', {
         ),
         allowNull: false
     },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-    }
+    createdAt: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+    updatedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW }
 }, {
-    tableName: 'Usuarios', // Asegúrate de que tu tabla se llame así
+    tableName: 'usuarios', // 👈 Todo minúscula
     timestamps: true
 });
 

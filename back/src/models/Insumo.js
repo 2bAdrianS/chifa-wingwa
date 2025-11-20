@@ -1,4 +1,3 @@
-// src/models/Insumo.js
 const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../config/database');
 
@@ -10,18 +9,10 @@ const Insumo = sequelize.define('Insumo', {
     stock_minimo: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 5.00 },
     unidad_medida: { type: DataTypes.STRING(20), allowNull: false },
     categoria: { type: DataTypes.STRING(100) },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-    }
+    createdAt: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+    updatedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW }
 }, {
-    tableName: 'Insumos',
+    tableName: 'insumos', // 👈 Todo minúscula
     timestamps: true
 });
 
