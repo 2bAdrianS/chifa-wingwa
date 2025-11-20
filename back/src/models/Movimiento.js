@@ -24,7 +24,8 @@ const Movimiento = sequelize.define('Movimiento', {
         defaultValue: Sequelize.NOW
     }
 }, {
-    tableName: 'Movimientos',
+    // 👇 LA CORRECCIÓN: Nombre de tabla en minúsculas
+    tableName: 'movimientos',
     timestamps: true
 });
 
