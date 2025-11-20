@@ -35,9 +35,12 @@ exports.getInsumosBajoStock = async (req, res) => {
 
 // POST /api/insumos
 exports.crearInsumo = async (req, res) => {
-    if (!['Jefe de Almacen', 'Encargado de Almacen'].includes(req.user.rol)) {
+    // FIX: Comparación en minúsculas
+    const userRol = req.user.rol ? req.user.rol.toLowerCase() : '';
+    if (!['jefe de almacen', 'encargado de almacen'].includes(userRol)) {
         return res.status(403).json({ message: 'Acceso denegado. No tiene permisos para crear insumos.' });
     }
+    
     const { nombre, descripcion, stock_actual, stock_minimo, unidad_medida, categoria } = req.body;
     
     if (!nombre || !stock_actual || !stock_minimo || !unidad_medida || !categoria) {
@@ -64,9 +67,12 @@ exports.crearInsumo = async (req, res) => {
 
 // PUT /api/insumos/:id/stock
 exports.updateStock = async (req, res) => {
-    if (!['Encargado de Almacen', 'Jefe de Almacen'].includes(req.user.rol)) {
+    // FIX: Comparación en minúsculas
+    const userRol = req.user.rol ? req.user.rol.toLowerCase() : '';
+    if (!['encargado de almacen', 'jefe de almacen'].includes(userRol)) {
         return res.status(403).json({ message: 'Acceso denegado.' });
     }
+    
     const { id } = req.params;
     const { nueva_cantidad, motivo } = req.body;
     const id_usuario_registro = req.user.id;
@@ -86,7 +92,6 @@ exports.updateStock = async (req, res) => {
         const nuevaCantidadNum = parseFloat(nueva_cantidad);
         const diferencia = nuevaCantidadNum - stockOriginal;
         
-        // Determinamos si es entrada o merma (salida no justificada)
         const tipoMovimiento = diferencia > 0 ? 'entrada' : (diferencia < 0 ? 'merma' : null);
 
         if (tipoMovimiento) {
@@ -109,12 +114,8 @@ exports.updateStock = async (req, res) => {
     }
 };
 
-// =======================================================================
-// CORRECCIÓN CLAVE: registrarMerma ahora recibe id_insumo en el BODY
-// =======================================================================
 // POST /api/insumos/merma
 exports.registrarMerma = async (req, res) => {
-    // Obtenemos id_insumo del BODY, no de params
     const { id_insumo, cantidad, motivo } = req.body; 
     const id_usuario_registro = req.user.id;
 
@@ -165,16 +166,14 @@ exports.registrarMerma = async (req, res) => {
         res.status(500).json({ message: "Error al registrar la merma", error: error.message });
     }
 };
-// =======================================================================
 
-/**
- * @desc    Eliminar un insumo del catálogo
- * @route   DELETE /api/insumos/:id
- */
+// DELETE /api/insumos/:id
 exports.deleteInsumo = async (req, res) => {
     const { id } = req.params;
-
-    if (req.user.rol !== 'Jefe de Almacen') {
+    // FIX: Comparación en minúsculas
+    const userRol = req.user.rol ? req.user.rol.toLowerCase() : '';
+    
+    if (userRol !== 'jefe de almacen') {
          return res.status(403).json({ message: 'Acceso denegado. Permisos insuficientes.' });
     }
 
