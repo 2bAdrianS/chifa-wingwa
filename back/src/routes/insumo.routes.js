@@ -7,7 +7,7 @@ const roleCheck = require('../middleware/roleCheck');
 
 // --- (NUEVA) RUTA PARA GESTIÓN ---
 
-// (NUEVA) Eliminar un insumo del catálogo
+// Eliminar un insumo del catálogo
 router.delete(
     '/:id',
     authMiddleware,
@@ -15,7 +15,16 @@ router.delete(
     insumoController.deleteInsumo
 );
 
-// --- RUTAS QUE YA TENÍAS ---
+// --- RUTAS CORREGIDAS ---
+
+// Registrar merma
+// (CORRECCIÓN: Quitamos el /:id para coincidir con el Frontend)
+router.post(
+    '/merma',
+    authMiddleware,
+    roleCheck(['Encargado de Almacen', 'Jefe de Almacen']),
+    insumoController.registrarMerma
+);
 
 // Obtener insumos con stock bajo
 router.get(
@@ -46,14 +55,6 @@ router.put(
     authMiddleware,
     roleCheck(['Encargado de Almacen', 'Jefe de Almacen']),
     insumoController.updateStock
-);
-
-// Registrar merma
-router.post(
-    '/:id/merma',
-    authMiddleware,
-    roleCheck(['Encargado de Almacen', 'Jefe de Almacen']),
-    insumoController.registrarMerma
 );
 
 module.exports = router;
