@@ -45,7 +45,10 @@ const Despacho_Detalle = sequelize.define('Despacho_Detalle', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     }
-}, { tableName: 'despacho_detalle', timestamps: false }); // <-- CORREGIDO
+}, { 
+    tableName: 'despacho_detalle', // 👈 ¡ESTA ES LA CORRECCIÓN! (Todo minúsculas)
+    timestamps: false 
+});
 
 const Orden_Compra_Detalle = sequelize.define('Orden_Compra_Detalle', {
     id_orden_compra: {
