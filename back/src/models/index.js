@@ -10,8 +10,7 @@ const Despacho = require('./Despacho');
 const OrdenCompra = require('./OrdenCompra');
 const Movimiento = require('./Movimiento');
 
-// --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
-// Definir tablas intermedias con los nombres EXACTOS de la BD (minúsculas)
+// --- DEFINICIÓN DE TABLAS INTERMEDIAS ---
 
 const Solicitud_Detalle = sequelize.define('Solicitud_Detalle', {
     id_solicitud: {
@@ -28,7 +27,10 @@ const Solicitud_Detalle = sequelize.define('Solicitud_Detalle', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     }
-}, { tableName: 'solicitud_detalle', timestamps: true }); // <-- CORREGIDO
+}, { 
+    tableName: 'solicitud_detalle', 
+    timestamps: true 
+});
 
 const Despacho_Detalle = sequelize.define('Despacho_Detalle', {
     id_despacho: {
@@ -46,8 +48,8 @@ const Despacho_Detalle = sequelize.define('Despacho_Detalle', {
         allowNull: false
     }
 }, { 
-    tableName: 'despacho_detalle', // 👈 ¡ESTA ES LA CORRECCIÓN! (Todo minúsculas)
-    timestamps: false 
+    tableName: 'despacho_detalle', 
+    timestamps: true // CORREGIDO: Debe ser true para enviar createdAt/updatedAt
 });
 
 const Orden_Compra_Detalle = sequelize.define('Orden_Compra_Detalle', {
@@ -65,7 +67,10 @@ const Orden_Compra_Detalle = sequelize.define('Orden_Compra_Detalle', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     }
-}, { tableName: 'orden_compra_detalle', timestamps: false }); // <-- CORREGIDO
+}, { 
+    tableName: 'orden_compra_detalle', 
+    timestamps: true // CORREGIDO: Preventivo, para evitar el mismo error aquí
+});
 
 
 // --- 1. ASOCIACIONES DE USUARIO ---
