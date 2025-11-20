@@ -2089,6 +2089,65 @@
 
 
         // --- Carga inicial ---
+        
+        // Función robusta para iniciar datos sin que un error detenga todo el sistema
+        async function inicializarSistema() {
+            console.log("🚀 Iniciando sistema...");
+
+            // 1. PRIORIDAD ALTA: Cargar catálogos (Insumos)
+            // Esto es vital para que el Chef pueda pedir y Almacén despachar.
+            // Si esto falla, los menús desplegables salen vacíos.
+            try {
+                // Cargamos insumos si el usuario tiene rol operativo
+                if (user.rol !== 'Dueño') {
+                    await cargarInsumosParaSolicitud(); 
+                    await cargarInsumosParaMerma();
+                    // Si tienes una función para ver el stock actual, la llamamos aquí:
+                    if (typeof cargarGestionarInsumos === 'function') await cargarGestionarInsumos();
+                    console.log("✅ Catálogos e inventario cargados.");
+                }
+            } catch (error) {
+                console.error("⚠️ Error cargando inventario (no crítico):", error);
+            }
+
+            // 2. PRIORIDAD MEDIA: Cargar Solicitudes y Despachos
+            try {
+                if (user.rol === 'Jefe de Almacen' || user.rol === 'Chef de Cocina' || user.rol === 'Encargado de Almacen') {
+                    // Verificamos si las funciones existen antes de llamarlas para evitar errores
+                    if (typeof cargarSolicitudesPendientes === 'function') await cargarSolicitudesPendientes();
+                    if (typeof cargarDespachosPendientes === 'function') await cargarDespachosPendientes();
+                    if (typeof cargarSolicitudesAprobadasParaDespacho === 'function') await cargarSolicitudesAprobadasParaDespacho();
+                }
+            } catch (error) {
+                console.error("⚠️ Error cargando flujo de solicitudes:", error);
+            }
+
+            // 3. PRIORIDAD BAJA / RIESGO ALTO: Cargar Órdenes de Compra
+            // Aquí es donde te salía el Error 500. Lo aislamos en su propio try/catch.
+            try {
+                if (user.rol === 'Encargado de Almacen' || user.rol === 'Encargado de Compras') {
+                    console.log("🔄 Cargando órdenes...");
+                    if (typeof cargarOrdenesValidadas === 'function') await cargarOrdenesValidadas();
+                    if (typeof cargarOrdenesPendientes === 'function') await cargarOrdenesPendientes();
+                    console.log("✅ Órdenes cargadas.");
+                }
+            } catch (error) {
+                // Si el servidor falla aquí (Error 500), SOLO fallará esta parte.
+                // El resto de la página seguirá funcionando.
+                console.warn("❌ Falló la carga de órdenes (Error de Backend), pero el sistema continúa activo.", error);
+                
+                // Feedback visual para el usuario en la tabla de órdenes (si existe)
+                const tablaEntry = document.getElementById('entry-table-body');
+                if (tablaEntry) tablaEntry.innerHTML = '<tr><td colspan="4" style="color:#dc3545; text-align:center; padding: 20px;"><i class="fas fa-exclamation-triangle"></i> No se pudieron cargar las órdenes (Error de conexión). Intente más tarde.</td></tr>';
+            }
+
+            console.log("🏁 Sistema listo.");
+        }
+
+        // Ejecutamos la carga segura
+        inicializarSistema();
+        
+        // Mostramos la vista inicial
         showView('view-welcome');
         
     });
