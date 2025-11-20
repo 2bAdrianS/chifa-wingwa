@@ -22,7 +22,7 @@ const OrdenCompra = sequelize.define('OrdenCompra', {
         defaultValue: Sequelize.NOW
     }
 }, {
-    tableName: 'Ordenes_Compra',
+    tableName: 'ordenes_compra', // <--- CORREGIDO: Todo minúsculas para coincidir con la BD
     timestamps: true
 });
 
