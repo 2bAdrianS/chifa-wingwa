@@ -26,6 +26,15 @@ const Solicitud_Detalle = sequelize.define('Solicitud_Detalle', {
     cantidad_solicitada: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
+    },
+    // Agregamos explícitamente timestamps por seguridad
+    createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: Sequelize.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: Sequelize.NOW
     }
 }, { 
     tableName: 'solicitud_detalle', 
@@ -46,10 +55,21 @@ const Despacho_Detalle = sequelize.define('Despacho_Detalle', {
     cantidad_despachada: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
+    },
+    // 👇 SOLUCIÓN DEFINITIVA: Definir explícitamente las fechas
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW
     }
 }, { 
     tableName: 'despacho_detalle', 
-    timestamps: true // CORREGIDO: Debe ser true para enviar createdAt/updatedAt
+    timestamps: true 
 });
 
 const Orden_Compra_Detalle = sequelize.define('Orden_Compra_Detalle', {
@@ -66,10 +86,21 @@ const Orden_Compra_Detalle = sequelize.define('Orden_Compra_Detalle', {
     cantidad_a_comprar: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
+    },
+    // 👇 PREVENCIÓN PARA ORDENES DE COMPRA
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW
     }
 }, { 
     tableName: 'orden_compra_detalle', 
-    timestamps: true // CORREGIDO: Preventivo, para evitar el mismo error aquí
+    timestamps: true 
 });
 
 
